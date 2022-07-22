@@ -1,6 +1,6 @@
 import React from "react"
 
-import { BrowserRouter as Router, Routes , Route } from 'react-router-dom';
+import { Routes , Route } from 'react-router-dom';
 
 
 import HomeIcon from '@mui/icons-material/Home';
@@ -8,13 +8,14 @@ import ContactMailIcon from '@mui/icons-material/ContactMail';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import BusinessIcon from '@mui/icons-material/Business';
+import LocalMallIcon from '@mui/icons-material/LocalMall';
 
 import HomeIndex from '../pages/home/homePage';
 import ContatoIndex from '../pages/contatos/contatosPage';
 import MotoristaIndex from "../pages/motorista/motoristaPage";
 import EmpresaIndex from "../pages/empresas/empresaPage";
-import ViagemIndex from "../pages/viagens/viagensPage";
 import ViagemIndex2 from "../pages/viagens/viagensPage2";
+import MercadoIndex from "../pages/mercados/mercadoPage";
 
 
 export default function Rotas(){
@@ -25,6 +26,7 @@ export default function Rotas(){
             <Route element = { <MotoristaIndex/> } path='/motorista' />
             <Route element = { <EmpresaIndex/>} path ='/empresa' />
             <Route element = { <ViagemIndex2/>} path ='/viagem' />
+            <Route element = { <MercadoIndex/>} path = '/mercado' />
         </Routes>
 
 
@@ -56,6 +58,11 @@ export const MapRoutes = {
         "title": "Empresas",
         "rota":"/empresa",
         "ico": <BusinessIcon/>
+    },
+    "mercado":{
+        "title": "Mercados",
+        "rota":"/mercado",
+        "ico": <LocalMallIcon/>
     }
     
 
