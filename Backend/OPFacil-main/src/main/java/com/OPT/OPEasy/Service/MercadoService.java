@@ -76,18 +76,20 @@ public class MercadoService {
         Mercado mercadoFound = mercadoRepository.findById(id).orElseThrow(
             () -> new ResourceNotFoundException("O ID informado não foi encontrado."));
 
-        if(mercado.getNick() != null){
-            String nick = mercado.getNick();
+        if(mercado.getNick() == null || mercado.getNick() == "")
+            throw new Exception("O nome do mercado não pode ser vazio");
 
-            if(hasMercadoByNick(nick)){
-                Mercado mercadoByNick = mercadoRepository.findByNick(nick).get();
-                if(mercadoByNick.getId() == mercadoFound.getId()){
-                    return mercadoFound;
-                } else{
-                    throw new Exception("Nick informado já se encontra cadastrado. Tente outro.");
-                }
+        String nick = mercado.getNick();
+
+        if(hasMercadoByNick(nick)){
+            Mercado mercadoByNick = mercadoRepository.findByNick(nick).get();
+            if(mercadoByNick.getId() == mercadoFound.getId()){
+                return mercadoFound;
+            } else{
+                throw new Exception("Nick informado já se encontra cadastrado. Tente outro.");
             }
         }
+        
         return mercadoFound;
     }
     

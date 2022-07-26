@@ -1,23 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from 'axios';
 import {Button} from '@mui/material';
 import { Box } from '@mui/system';
 import { ContatoModel } from "./contatoModel";
+import {EmpresaModel} from '../empresas/empresaModel'
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+
 
 export default function NewContato({...props}){
-    let {newModal, setNewModal, callback} = props;
+    let {newModal, setNewModal, callback, empresas} = props;
+
+    const [currentEmpresa, setCurrentEmpresa] = useState(EmpresaModel);
+
+    const nomeInputText = document.getElementById("edit_nome");
+    const emailInputText = document.getElementById("edit_email");
+    const nickInputText = document.getElementById("edit_nick")
 
     const hadleConfirmNewClick = async () => {
         let newConto = {... ContatoModel}
-        newConto.nome = document.getElementById("nome").value;
-        newConto.email = document.getElementById("email").value;
-        newConto.nick = document.getElementById("nick").value;
-        delete newConto.empresa;
+        newConto.nome = nomeInputText.value;
+        newConto.email = emailInputText.value;
+        newConto.nick = nickInputText.value;
+        newConto.empresa = currentEmpresa;
         
         const res = await axios.post('http://localhost:8080/contato/cadastrar/', newConto)
             .then((res) => {
@@ -32,6 +41,13 @@ export default function NewContato({...props}){
         setNewModal(false);
     } 
 
+    const handleSelectEmpresa = (event) => {
+        setCurrentEmpresa(empresas.find(obj => {
+            return obj.nick == event.target.value
+        }))
+        console.log(currentEmpresa)
+    }
+
     return (
         <>
             <Dialog open={newModal} onClose={() => setNewModal(false)}>
@@ -41,13 +57,20 @@ export default function NewContato({...props}){
                 <DialogContent>
                     <Box component="form" sx={{ '& > :not(style)': { m: 1, width: '25ch' }, }} noValidate autoComplete="off">
                         <TextField style={{ flex: 1, width: "50%", marginTop: "20px", color: "#FFF", textAlignVertical: "top", display: "block" }}
-                            id="nome" label="Nome" variant="outlined" />
+                            id="edit_nome" label="Nome" variant="outlined" />
                         <TextField style={{ flex: 1, width: "50%", marginTop: "20px", color: "#FFF", textAlignVertical: "top", display: "block" }}
-                            id="nick" label="Apelido" variant="outlined" />
+                            id="edit_nick" label="Apelido" variant="outlined" />
                         <TextField style={{ flex: 1, width: "100%", height: 50, color: "#FFF", textAlignVertical: "top", }}
-                            align='right' id="email" label="Email" variant="outlined" />
+                            align='right' id="edit_email" label="Email" variant="outlined" />
                         <TextField style={{ flex: 1, width: "100%", height: 50, color: "#FFF", textAlignVertical: "top", }}
-                            align='right' id="empresa" label="Empresa" variant="outlined"/>
+                            align='right' id="edit_empresa" label="Empresa" variant="outlined" value={currentEmpresa.nick}
+                             select onChange={handleSelectEmpresa}>
+                                {empresas.map((emp) => (
+                                    <MenuItem key={emp.id} value={emp.nick}>
+                                        {emp.nick}
+                                    </MenuItem>
+                                ))}
+                        </TextField>
                     </Box>
 
                     {/* <DialogContentText id="alert-dialog-description">

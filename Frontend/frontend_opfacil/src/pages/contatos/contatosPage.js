@@ -27,6 +27,7 @@ const ALERT_TYPE = {
 
 export default function ContatoIndex() {
     const [value, setValue] = useState([ContatoModel]);
+    const [empresas, setEmpresas] = useState([{}]);
 
     const [deleteModal, setDeleteModal] = useState(false)
     const [contatoToDelete, setContatoToDelete] = useState(ContatoModel);
@@ -45,9 +46,16 @@ export default function ContatoIndex() {
             const res = await axios('http://localhost:8080/contato/list');
             setValue(res.data);
         }
-
+        const getEmpresas = async () => {
+            const res = await axios('http://localhost:8080/empresa/list');
+            setEmpresas(res.data);
+        }
+    
+        getEmpresas();
         getContato();
     })
+
+
 
     const setAlert = (alertType, message) => {
         setShowAlert(true);
@@ -70,35 +78,6 @@ export default function ContatoIndex() {
         setEditModal(true);
     }
 
-    const hadleConfirmEditClick = async () => {
-        let editedContato = { ...ContatoModel }
-        editedContato.id = contatoToEdit.id;
-        editedContato.nome = document.getElementById("edit_nome").value;
-        editedContato.email = document.getElementById("edit_email").value;
-        editedContato.nick = document.getElementById("edit_nick").value;
-        delete editedContato.empresa;
-        console.log(editedContato);
-
-        const res = await axios.put('http://localhost:8080/contato/atualizar/' + editedContato.id, editedContato)
-            .then((res) => {
-                setShowAlert(true);
-                setAlertType(ALERT_TYPE.SUCESS);
-                setAlertMessage("Contato alterado com sucesso");
-
-            })
-            .catch(function (error) {
-                if (error.response) {
-                    setShowAlert(true);
-                    setAlertType(ALERT_TYPE.ERROR);
-                    setAlertMessage(error.response.data.message);
-
-                }
-
-            })
-        setEditModal(false);
-        setContatoToEdit(ContatoModel);
-    }
-
 
     return (
         <>
@@ -112,10 +91,10 @@ export default function ContatoIndex() {
 
             {/* Modal para editar o contato */}
             <EditarContatoModal editModal={editModal} setEditModal={setEditModal} setContatoToEdit={setContatoToEdit}
-                contatoToDelete={contatoToDelete} callback={setAlert} contatoToEdit={contatoToEdit} />
+                contatoToDelete={contatoToDelete} callback={setAlert} contatoToEdit={contatoToEdit} empresas={empresas}/>
 
             {/* Modal para criar novo contato */}
-            <NewContato newModal={newModal} setNewModal={setNewModal} callback={setAlert} />
+            <NewContato newModal={newModal} setNewModal={setNewModal} callback={setAlert} empresas={empresas}/>
 
 
 

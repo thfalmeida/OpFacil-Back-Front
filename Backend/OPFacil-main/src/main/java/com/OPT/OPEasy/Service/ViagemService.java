@@ -32,22 +32,6 @@ public class ViagemService {
     private TransporteRepository transporteRepository;
 
     
-    // public Viagem cadastrarViagem(ViagemDTO viagem){
-    //     checkCadastroViagem(viagem);
-    //     Motorista motorista = motoristaService.getMotoristaByID(viagem.getMotoristaID());
-    //     Empresa empresa = null;
-    //     if(viagem.getEmpresaID() != null){
-    //         empresa = empresaService.getEmpresaByID(viagem.getEmpresaID());
-    //     }
-            
-    //     Viagem newViagem = new Viagem();
-    //     newViagem.setAttributes(viagem);
-    //     newViagem.setMotorista(motorista);
-    //     newViagem.setEmpresa(empresa);
-    //     viagemRepository.save(newViagem);
-    //     return newViagem;
-    // }
-
     public Viagem cadastrarViagem(Viagem viagem) throws Exception{
         checkCadastroViagem(viagem);
         checkTransporte(viagem.getTransportes());
@@ -61,34 +45,6 @@ public class ViagemService {
 
         return newViagem;
     }
-    
-    // public Viagem updateViagem(Long id,ViagemDTO viagem){
-    //     Viagem newViagem =  viagemRepository.findById(id).orElseThrow(
-    //         () -> new ResourceNotFoundException("Viagem não encontrada"));
-
-    //     Motorista motorista = null;
-    //     if(viagem.getMotoristaID() != null)
-    //         motoristaService.getMotoristaByID(viagem.getMotoristaID());
-        
-    //     Empresa empresa = null;
-    //     if(viagem.getEmpresaID() != null)
-    //         empresa = empresaService.getEmpresaByID(viagem.getEmpresaID());
-        
-            
-    //     newViagem.setAttributes(viagem);
-    //     newViagem.setMotorista(motorista);
-    //     newViagem.setEmpresa(empresa);
-
-    //     viagemRepository.save(newViagem);
-    //     return newViagem;
-    // }
-
-    // public Stream<Viagem> gerarRelatorio(ViagemRelatorioDTO rel) throws FileNotFoundException, IOException{
-    //     List<Viagem> viagens = viagemRepository.findAll();
-    //     viagemWritter.SetValues(rel);
-    //     viagemWritter.createReport(viagens);
-    //     return viagens.stream();
-    // }
 
     public Viagem deleteViagem(Viagem viagem){
         Viagem viagemFound = getViagemById(viagem.getId());
@@ -127,23 +83,9 @@ public class ViagemService {
         return viagem;
     }
 
-
-    // public Transporte getTransporteByTransporteNo(Long id){
-    //     Viagem[] viagens = (Viagem[]) findAll().toArray();        
-    //     for(Viagem v: viagens){
-    //         Transporte transporte = v.GetTransporteByTransporteNo(id);
-    //         if(v != null)
-    //             return transporte;
-    //     }
-
-    //     return null;
-    // }
-
     public boolean hasTransporte(Long transporte){
         return transporteRepository.findByTransporte(transporte).isPresent();       
     }
-
-
 
     public Stream<Viagem> findAll(){
         return viagemRepository.findAll().stream();
@@ -169,12 +111,6 @@ public class ViagemService {
         return viagens;
     }
 
-    // public void checkCadastroViagem(ViagemDTO viagem){
-    //     if(!motoristaService.hasMotoristaById(viagem.getMotoristaID()))
-    //         throw new ResourceNotFoundException("Motorista não encontrado");
-    //     if(viagem.getEmpresaID() != null && !empresaService.hasEmpresaById(viagem.getEmpresaID()))
-    //         throw new ResourceNotFoundException("Empresa não encontrada");
-    // }
 
     public void checkCadastroViagem(Viagem viagem) throws Exception{
         List<Transporte> transportes = viagem.getTransportes();

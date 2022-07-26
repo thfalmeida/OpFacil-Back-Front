@@ -25,6 +25,7 @@ public class ContatoService {
         
         Empresa empresa = contato.getEmpresa();
         if(empresa != null){
+            checkUpdateEmpresa(contato);
             empresa = empresaService.getEmpresaByID(empresa.getId());
             contato.setEmpresa(empresa);
         }
@@ -34,11 +35,10 @@ public class ContatoService {
     }
 
     public Contato updateContato(Long id,Contato contato) throws Exception{
-        // Contato contatoFound = contatoRepository.findById(id).orElseThrow(
-        //     () -> new ResourceNotFoundException(Error.ID_NOT_FOUND));
-        // Contato contatoFoundByNick = getContatoByNick(contato.getNick());
         Contato contatoFound = checkContatoUpdate(id, contato);
+        checkUpdateEmpresa(contato);
         contatoFound.setAttributes(contato);
+        contatoFound.setEmpresa(contato.getEmpresa());
         contatoRepository.save(contatoFound);
         return contatoFound;
     }
@@ -92,7 +92,10 @@ public class ContatoService {
 
         String nick = contato.getNick();
 
-        if(contato.getNick() == null || !hasContatoByNick(nick))
+        if(contato.getNick() == null || contato.getNick() == "")
+            throw new Exception("O nick não pode ser nulo");
+        
+        if (!hasContatoByNick(nick))
             return contatoFound;
 
         Contato contatoByNick = contatoRepository.findByNick(nick).get();
@@ -101,6 +104,16 @@ public class ContatoService {
         } else{
             throw new Exception("Nick informado já se encontra cadastrado. Tente outro.");
         }
+    }
+
+    private void checkUpdateEmpresa(Contato contato) throws Exception{
+
+        Empresa empresa = contato.getEmpresa();
+        if(!empresaService.hasEmpresaById(empresa.getId()))
+            throw new Exception("A empresa do contato não foi encontrada: Id");
+        
+        if(!empresaService.hasEmpresaByNick(empresa.getNick()))
+            throw new Exception("A empresa do contato não foi foi encontrada: Nick");
         
     }
 

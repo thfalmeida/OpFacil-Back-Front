@@ -34,11 +34,6 @@ public class ViagemController {
         return new ResponseEntity<Viagem>(newViagem, HttpStatus.CREATED);
     }
 
-    // @PutMapping("/atualizar/{id}")
-    // public ResponseEntity<Viagem> atualizarViagem(@PathVariable Long id, @RequestBody ViagemDTO viagem){
-    //     Viagem newViagem = viagemService.updateViagem(id, viagem);
-    //     return new ResponseEntity<Viagem>(newViagem, HttpStatus.ACCEPTED);
-    // }
 
     @DeleteMapping("/deletar/{id}")
     public ResponseEntity<Viagem> deleteViagem(@PathVariable Long id){

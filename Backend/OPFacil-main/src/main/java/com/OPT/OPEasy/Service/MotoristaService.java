@@ -70,18 +70,21 @@ public class MotoristaService {
         Motorista motoristaFound = motoristaRepository.findById(id).orElseThrow(
             () -> new ResourceNotFoundException("O ID informado não foi encontrado."));
 
-        if(motorista.getNick() != null){
-            String nick = motorista.getNick();
+        if(motorista.getNick() == null || motorista.getNick() == "")
+            throw new Exception("O apelido do motorista não pode ser nulo");
 
-            if(hasMotoristaByNick(nick)){
-                Motorista motoristaByNick = motoristaRepository.findByNick(nick).get();
-                if(motoristaByNick.getId() == motoristaFound.getId()){
-                    return motoristaFound;
-                } else{
-                    throw new Exception("Nick informado já se encontra cadastrado. Tente outro.");
-                }
+            
+        String nick = motorista.getNick();
+
+        if(hasMotoristaByNick(nick)){
+            Motorista motoristaByNick = motoristaRepository.findByNick(nick).get();
+            if(motoristaByNick.getId() == motoristaFound.getId()){
+                return motoristaFound;
+            } else{
+                throw new Exception("Nick informado já se encontra cadastrado. Tente outro.");
             }
         }
+        
         return motoristaFound;
     }
 

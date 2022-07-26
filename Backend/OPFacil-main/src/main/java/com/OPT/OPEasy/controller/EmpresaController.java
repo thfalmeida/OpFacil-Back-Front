@@ -47,18 +47,18 @@ public class EmpresaController {
     @GetMapping("/id/{id}")
     public ResponseEntity<Empresa> consultarEmpresa(@PathVariable Long id){
         Empresa empresa = empresaService.getEmpresaByID(id);
-        return new ResponseEntity<Empresa>(empresa, HttpStatus.FOUND);
+        return new ResponseEntity<Empresa>(empresa, HttpStatus.OK);
     }
 
     @GetMapping("/nick/{nick}")
     public ResponseEntity<Empresa> consultarEmpresa(@PathVariable String nick){
         Empresa empresa = empresaService.getEmpresaByNick(nick);
-        return new ResponseEntity<Empresa>(empresa, HttpStatus.FOUND);
+        return new ResponseEntity<Empresa>(empresa, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Empresa> deletarmpresa(@PathVariable Long id){
         Empresa empresa = empresaService.deleteEmpresa(id);
-        return new ResponseEntity<Empresa>(empresa, HttpStatus.FOUND);
+        return new ResponseEntity<Empresa>(empresa, HttpStatus.OK);
     }
 }

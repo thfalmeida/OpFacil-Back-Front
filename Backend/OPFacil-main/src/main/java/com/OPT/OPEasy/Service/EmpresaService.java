@@ -70,18 +70,22 @@ public class EmpresaService {
         Empresa empresaFound = empresaRepository.findById(id).orElseThrow(
             () -> new ResourceNotFoundException("O ID informado não foi encontrado."));
 
-        if(empresa.getNick() != null){
-            String nick = empresa.getNick();
+        if(empresa.getNick() == null || empresa.getNick() == "")   
+            throw new Exception("Nome da empresa não pode ser vazio");
+        
+        
+        
+        String nick = empresa.getNick();
 
-            if(hasEmpresaByNick(nick)){
-                Empresa empresaByNick = empresaRepository.findByNick(nick).get();
-                if(empresaByNick.getId() == empresaFound.getId()){
-                    return empresaFound;
-                } else{
-                    throw new Exception("Nick informado já se encontra cadastrado. Tente outro.");
-                }
+        if(hasEmpresaByNick(nick)){
+            Empresa empresaByNick = empresaRepository.findByNick(nick).get();
+            if(empresaByNick.getId() == empresaFound.getId()){
+                return empresaFound;
+            } else{
+                throw new Exception("Nick informado já se encontra cadastrado. Tente outro.");
             }
         }
+        
         return empresaFound;
     }
 }
