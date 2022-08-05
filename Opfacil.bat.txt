@@ -1,0 +1,4 @@
+echo off
+:off
+cd .\Backend\OPFacil-main
+mvn spring-boot:run

@@ -35,7 +35,7 @@ public class MercadoController {
     @PutMapping("/atualizar/{id}")
     public ResponseEntity<Mercado> atualizarMercado(@PathVariable Long id, @RequestBody Mercado mercado) throws Exception{
         Mercado newMercado = mercadoService.updateMercado(id, mercado);
-        return new ResponseEntity<Mercado>(newMercado, HttpStatus.ACCEPTED);
+        return new ResponseEntity<Mercado>(newMercado, HttpStatus.OK);
     }
 
     @DeleteMapping("/deletar/{id}")

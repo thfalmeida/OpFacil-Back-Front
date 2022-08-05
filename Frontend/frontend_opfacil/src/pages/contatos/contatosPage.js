@@ -71,6 +71,7 @@ export default function ContatoIndex() {
 
     const handleCloseModal = () => {
         setDeleteModal(false);
+        setContatoToDelete(ContatoModel);
     }
 
     const handleEditClick = (contato) => {
