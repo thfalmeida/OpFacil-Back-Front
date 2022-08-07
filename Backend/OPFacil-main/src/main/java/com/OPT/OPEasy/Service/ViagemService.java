@@ -1,5 +1,6 @@
 package com.OPT.OPEasy.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -34,9 +35,9 @@ public class ViagemService {
     
     public Viagem cadastrarViagem(Viagem viagem) throws Exception{
         checkCadastroViagem(viagem);
-        checkTransporte(viagem.getTransportes());
-
-        for (Transporte transporte : viagem.getTransportes()) {
+        List<Transporte> transps = checkTransporte(viagem.getTransportes());
+        viagem.setTransportes(transps);
+        for (Transporte transporte : transps) {
             transporteRepository.save(transporte);
         }
         Viagem newViagem = new Viagem();
@@ -122,11 +123,21 @@ public class ViagemService {
             throw new ResourceNotFoundException("Empresa não encontrada");
     }
 
-    public void checkTransporte(List<Transporte> transportes) throws Exception{
+    public List<Transporte> checkTransporte(List<Transporte> transportes) throws Exception{
+        List<Transporte> listaRetorno = new ArrayList<Transporte>();
         for (Transporte transporte : transportes) {
             Long transp = transporte.getTransporte();
+            Mercado mercado = transporte.getMercado();
+
             if(transp == null || transp < 0)
                 throw new Exception("Valor do transporte não pode ser nulo ou negativo");
+            if(mercado != null && mercado.getId() != null){
+                if(!mercadoService.hasMercadoById(mercado.getId()))
+                    throw new Exception("Mercado não encontrado.");
+                
+                listaRetorno.add(transporte);
+            }
+                
         }
 
 
@@ -146,6 +157,8 @@ public class ViagemService {
             if(hasTransporte(transporte.getTransporte()))
                 throw new Exception("Transporte " + transporte.getTransporte() + "já se encontra cadastrado");
         }
+
+        return listaRetorno;
     }
 }
  

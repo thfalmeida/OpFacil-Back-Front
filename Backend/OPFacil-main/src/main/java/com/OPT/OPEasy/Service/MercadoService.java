@@ -3,7 +3,7 @@ package com.OPT.OPEasy.Service;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import com.OPT.OPEasy.Util.ResourceNotFoundException; 
+import com.OPT.OPEasy.Util.ResourceNotFoundException;
 import com.OPT.OPEasy.model.Mercado;
 import com.OPT.OPEasy.repository.MercadoRepository;
 
@@ -16,10 +16,8 @@ public class MercadoService {
     @Autowired
     private MercadoRepository mercadoRepository;
 
-
-    public Mercado cadastrarMercado(Mercado mercado) throws Exception{
-        if(hasMercadoByNick(mercado.getNick()))
-            throw new Exception("Nick informado já se encontra cadastrado. Tente outro.");
+    public Mercado cadastrarMercado(Mercado mercado) throws Exception {
+        checkMercado(mercado);
 
         Mercado newMercado = new Mercado();
         newMercado.setAttributes(mercado);
@@ -27,70 +25,69 @@ public class MercadoService {
         return newMercado;
     }
 
-    public Mercado updateMercado(Long id,Mercado mercado) throws Exception{
-        Mercado mercadoFound = checkMercadoUpdate(id, mercado);
-        
+    public Mercado updateMercado(Long id, Mercado mercado) throws Exception {
+        Mercado mercadoFound = mercadoRepository.findById(id).orElseThrow(
+            () -> new ResourceNotFoundException("O ID informado não foi encontrado."));
+        checkMercado(mercado);
+
         mercadoFound.setAttributes(mercado);
         mercadoRepository.save(mercadoFound);
         return mercadoFound;
     }
 
-    public Mercado deleteMercado(Mercado mercado){
+    public Mercado deleteMercado(Mercado mercado) {
         Mercado mercadoFound = mercadoRepository.findById(mercado.getId()).orElseThrow(
-            () -> new ResourceNotFoundException("O ID informado não foi encontrado."));
+                () -> new ResourceNotFoundException("O ID informado não foi encontrado."));
 
-            mercadoRepository.delete(mercadoFound);
+        mercadoRepository.delete(mercadoFound);
         return mercadoFound;
     }
 
-    public Stream<Mercado> findAll(){
+    public Stream<Mercado> findAll() {
         return mercadoRepository.findAll().stream();
     }
 
-    public Mercado getMercadoByID(Long id){
+    public Mercado getMercadoByID(Long id) {
         Mercado mercado = mercadoRepository.findById(id).orElseThrow(
-            () -> new ResourceNotFoundException("O ID informado não foi encontrado."));
+                () -> new ResourceNotFoundException("O ID informado não foi encontrado."));
         return mercado;
     }
 
-    public Mercado getMercadoByNick(String nick){
+    public Mercado getMercadoByNick(String nick) {
         Mercado mercado = mercadoRepository.findByNick(nick).orElseThrow(
-            () -> new ResourceNotFoundException("O ID informado não foi encontrado."));
+                () -> new ResourceNotFoundException("O ID informado não foi encontrado."));
         return mercado;
     }
 
-    public boolean hasMercadoById(Long id){
+    public boolean hasMercadoById(Long id) throws Exception {
+        if (id == null)
+            throw new Exception("O id não pode ser nulo: hasMercadoById");
         Optional<Mercado> mercado = mercadoRepository.findById(id);
         return mercado.isPresent();
     }
 
-    public boolean hasMercadoByNick(String nick){
+    public boolean hasMercadoByNick(String nick) {
         Optional<Mercado> mercado = mercadoRepository.findByNick(nick);
         return mercado.isPresent();
     }
 
-        //Checa se o esta tentando alterar o nick do mercado,
-    //Se estiver, checa se existe outro mercado com o nick, 
-    //caso exista, retorna erro, no contrário, o mercado é alterado 
-    public Mercado checkMercadoUpdate(Long id, Mercado mercado) throws Exception{
-        Mercado mercadoFound = mercadoRepository.findById(id).orElseThrow(
-            () -> new ResourceNotFoundException("O ID informado não foi encontrado."));
-
+    // Checa se o esta tentando alterar o nick do mercado,
+    // Se estiver, checa se existe outro mercado com o nick,
+    // caso exista, retorna erro, no contrário, o mercado é alterado
+    void checkMercado(Mercado mercado) throws Exception{
         if(mercado.getNick() == null || mercado.getNick() == "")
-            throw new Exception("O nome do mercado não pode ser vazio");
+            throw new Exception("A razão social do mercado não pode ser vazio");
+        if(mercado.getNome() == null || mercado.getNome() == "")
+            throw new Exception("O nome do mercado não pode ser vazia");
 
         String nick = mercado.getNick();
 
         if(hasMercadoByNick(nick)){
             Mercado mercadoByNick = mercadoRepository.findByNick(nick).get();
-            if(mercadoByNick.getId() == mercadoFound.getId()){
-                return mercadoFound;
-            } else{
-                throw new Exception("Nick informado já se encontra cadastrado. Tente outro.");
-            }
+            if(mercadoByNick.getId() != mercado.getId())
+                throw new Exception("Razao social informado já se encontra cadastrado. Tente outro.");
+            
         }
-        
-        return mercadoFound;
     }
-    
+
 }

@@ -24,10 +24,12 @@ public class ContatoService {
             throw new Exception("Nick informado já se encontra cadastrado. Tente outro.");
         
         Empresa empresa = contato.getEmpresa();
-        if(empresa != null){
+        if(empresa != null && empresa.getId() != null){
             checkUpdateEmpresa(contato);
             empresa = empresaService.getEmpresaByID(empresa.getId());
             contato.setEmpresa(empresa);
+        }else{
+            contato.setEmpresa(null);
         }
         
         contatoRepository.save(contato);
@@ -36,9 +38,15 @@ public class ContatoService {
 
     public Contato updateContato(Long id,Contato contato) throws Exception{
         Contato contatoFound = checkContatoUpdate(id, contato);
-        checkUpdateEmpresa(contato);
         contatoFound.setAttributes(contato);
-        contatoFound.setEmpresa(contato.getEmpresa());
+
+        if(contato.getEmpresa() != null && contato.getEmpresa().getId() != null){
+            checkUpdateEmpresa(contato);
+            contatoFound.setEmpresa(contato.getEmpresa());
+        }else{
+            contatoFound.setEmpresa(null);
+        }
+
         contatoRepository.save(contatoFound);
         return contatoFound;
     }
@@ -75,11 +83,11 @@ public class ContatoService {
     }
 
     private void checkContatoCreate(Contato contato) throws Exception{
-        if(contato.getNome() == null)
+        if(contato.getNome() == null || contato.getNome() == "")
             throw new Exception("O nome do contato não pode ser nulo");
-        if(contato.getNick() == null)
+        if(contato.getNick() == null || contato.getNick() == "")
             throw new Exception("O nick do contato não pode ser nulo");
-        if(contato.getEmail() == null)
+        if(contato.getEmail() == null || contato.getEmail() == "")
             throw new Exception("O email do contato não pode ser nulo");
     }
 
@@ -113,7 +121,7 @@ public class ContatoService {
             throw new Exception("A empresa do contato não foi encontrada: Id");
         
         if(!empresaService.hasEmpresaByNick(empresa.getNick()))
-            throw new Exception("A empresa do contato não foi foi encontrada: Nick");
+            throw new Exception("A empresa do contato não foi encontrada: Nick");
         
     }
 

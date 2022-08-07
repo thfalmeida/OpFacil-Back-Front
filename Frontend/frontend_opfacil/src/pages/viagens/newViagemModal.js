@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import moment from 'moment';
+import axios from 'axios';
 import { Box } from '@mui/system';
 import AddIcon from '@mui/icons-material/Add';
 import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
@@ -20,6 +22,7 @@ import {
 import { EmpresaModel } from "../empresas/empresaModel";
 import { MotoristaModel } from "../motorista/motoristaModel";
 import { NewTransporte } from "./newTransporte";
+import { viagemModel } from "./viagemModel";
 
 
 
@@ -30,49 +33,52 @@ export default function NewViagemModel({ ...props }) {
     const [currentMotorista, setCurrentMotorista] = useState(MotoristaModel);
     const [currentDate, setCurrentDate] = useState(null)
     const [currentNumTransporte, setcurrentNumTransporte] = useState(0);
+    const [transportes, setTransportes] = useState([]);
 
     const [avaria, setAvaria] = useState('')
     const [valor, setValor] = useState('')
 
-    const nomeInputText = document.getElementById("edit_nick");
-    const nickInputText = document.getElementById("edit_nome");
-    const enderecoInputText = document.getElementById("edit_endereco");
 
+    const hadleConfirmNewClick = async () => {
+        let newViagem = { ...viagemModel }
+        newViagem.motorista = currentMotorista;
+        newViagem.empresa = currentEmpresa;
+        newViagem.endereco = currentDate;
+        newViagem.avaria = avaria;
+        newViagem.data = moment(currentDate).format('DD/MM/YYYY');
+        newViagem.valor = valor;
+        newViagem.id = -1;
+        newViagem.transportes = transportes
 
-    // const hadleConfirmNewClick = async () => {
-    //     let newConto = { ...MercadoDTO }
-    //     newConto.nome = nomeInputText.value;
-    //     newConto.nick = nickInputText.value;
-    //     newConto.endereco = enderecoInputText.value
+        console.log(newViagem);
 
-    //     const res = await axios.post('http://localhost:8080/mercado/cadastrar/', newConto)
-    //         .then((res) => {
-    //             callback("success", "Viagem cadastrado com sucesso")
-    //         })
-    //         .catch(function (error) {
-    //             if (error.response.data) {
-    //                 callback("error", error.response.data.message)
-    //             } else if (error.request.data) {
-    //                 callback("error", error.request.data.message)
-    //             } else {
-    //                 callback("error", "Erro não identificado. Contate o ademir")
-    //             }
+        await axios.post('http://localhost:8080/viagem/cadastrar/', newViagem)
+            .then(() => {
+                callback("success", "Viagem cadastrado com sucesso")
+            })
+            .catch(function (error) {
+                if (error.response.data) {
+                    callback("error", error.response.data.message)
+                } else if (error.request.data) {
+                    callback("error", error.request.data.message)
+                } else {
+                    callback("error", "Erro não identificado. Contate o ademir")
+                }
 
-    //         })
-    //     setNewModal(false);
-    // }
+            })
+        setNewModal(false);
+    }
 
     const handleSelectEmpresa = (event) => {
         setCurrentEmpresa(empresa.find(obj => {
-            return obj.nick == event.target.value
+            return obj.nick === event.target.value
         }))
         console.log(currentEmpresa)
     }
     const handleSelectMotorista = (event) => {
         setCurrentMotorista(motorista.find(obj => {
-            return obj.nick == event.target.value
+            return obj.nick === event.target.value
         }))
-        console.log(currentMotorista)
     }
 
     const handleIncreaseTransporteNum = () => {
@@ -80,18 +86,17 @@ export default function NewViagemModel({ ...props }) {
     }
 
     const handleDecreaseTransporteNum = () => {
-        if (currentNumTransporte == 0)
+        if (currentNumTransporte === 0)
             return;
+        transportes.pop();
         setcurrentNumTransporte(currentNumTransporte - 1);
     }
 
     const handleAvariaOnChange = (event) => {
-        console.log(event)
         setAvaria(event.target.value);
     };
 
     const handleValorOnChange = (event) => {
-        console.log(event)
         setValor(event.target.value);
     }
 
@@ -128,7 +133,7 @@ export default function NewViagemModel({ ...props }) {
                                 inputFormat="dd/MM/yyyy"
                                 value={currentDate}
                                 onChange={setCurrentDate}
-                                renderInput={(params) => <TextField {...params} style={{marginTop: "20px", width: "50%", height: 50, color: "#FFF", display: 'flex' }}/>}
+                                renderInput={(params) => <TextField {...params} style={{ marginTop: "20px", width: "50%", height: 50, color: "#FFF", display: 'flex' }} />}
                             />
                         </LocalizationProvider>
                         <TextField style={{ marginTop: "20px", width: "50%", height: 50, color: "#FFF", display: 'flex' }}
@@ -156,12 +161,21 @@ export default function NewViagemModel({ ...props }) {
                             </Button>
                         </ButtonGroup>
                     </Box>
+
                     <Paper>
-                        <NewTransporte mercados={mercado} />
+                        {(() => {
+                            let td = [];
+                            for (let i = 0; i < currentNumTransporte; i++) {
+                                td.push(<NewTransporte mercados={mercado} transportes={transportes} setTransportes={setTransportes} index={i}/>);
+                            }
+                            return td;
+                        })()}
+
+
                     </Paper>
                     <DialogActions>
                         <Button onClick={() => setNewModal(false)}>Cancelar</Button>
-                        <Button autoFocus> Cadastrar </Button>
+                        <Button autoFocus onClick={() => hadleConfirmNewClick()}> Cadastrar </Button>
                     </DialogActions>
 
                 </DialogContent>

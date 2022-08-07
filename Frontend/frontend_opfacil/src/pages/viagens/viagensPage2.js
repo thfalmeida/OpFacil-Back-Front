@@ -17,15 +17,16 @@ import { Viagem } from "../../Model/entityModels";
 import { EmpresaModel } from "../empresas/empresaModel";
 import { MercadoModel } from "../mercados/mercadoPage";
 import { MotoristaModel } from "../motorista/motoristaModel";
+import { moneyMask } from "./currencyMask";
 
 import Alert from '@mui/material/Alert';
 import NewViagemModel from "./newViagemModal";
 
 export default function SimpleTable() {
-  const [viagem, setViagem] = useState([{Viagem}]);
-  const [empresa, setEmpresa] = useState([{EmpresaModel}]);
-  const [mercado, setMercado] = useState([{MercadoModel}]);
-  const [motorista, setMotorista] = useState([{MotoristaModel}])
+  const [viagem, setViagem] = useState([{ Viagem }]);
+  const [empresa, setEmpresa] = useState([{ EmpresaModel }]);
+  const [mercado, setMercado] = useState([{ MercadoModel }]);
+  const [motorista, setMotorista] = useState([{ MotoristaModel }])
 
   const [newModal, setNewModal] = useState(false);
 
@@ -64,15 +65,23 @@ export default function SimpleTable() {
     setShowAlert(true);
     setAlertType(alertType);
     setAlertMessage(message);
-}
+  } 
+
+  const handleEditClick = () => {
+    console.log("Editar")
+  }
+
+  const handleDeleteClick = () => {
+    console.log("deletar");
+  }
 
   return (
     <>
-    {/* Alert para notificar sucesso ou erro das ações */}
-    {showAlert && <Alert severity={alertType} onClose={() => { setShowAlert(false) }}>{alertMessage}</Alert>}
+      {/* Alert para notificar sucesso ou erro das ações */}
+      {showAlert && <Alert severity={alertType} onClose={() => { setShowAlert(false) }}>{alertMessage}</Alert>}
 
-      <NewViagemModel callback={setAlert} newModal={newModal} setNewModal={setNewModal} motorista={motorista} empresa={empresa} 
-        mercado={mercado}/>
+      <NewViagemModel callback={setAlert} newModal={newModal} setNewModal={setNewModal} motorista={motorista} empresa={empresa}
+        mercado={mercado} />
 
       <Button sx={{ margin: '16px' }} variant="contained" startIcon={<Add />} onClick={() => setNewModal(true)}>
         Novo
@@ -86,7 +95,8 @@ export default function SimpleTable() {
               <TableCell align="right">Motorista</TableCell>
               <TableCell align="right">Data</TableCell>
               <TableCell align="right">Valor</TableCell>
-              <TableCell align="right">Avaria</TableCell>
+              <TableCell align="right">Empresa</TableCell>
+              <TableCell align="right"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -96,7 +106,22 @@ export default function SimpleTable() {
                 <TableCell align="right">{row.motorista ? row.motorista.nick : ""}</TableCell>
                 <TableCell align="right">{row.data ? row.data : ""}</TableCell>
                 <TableCell align="right">{row.valor}</TableCell>
-                <TableCell align="right">{row.avaria}</TableCell>
+                <TableCell align="right">{row.empresa ? row.empresa.nick : ""}</TableCell>
+                <TableCell key={'buttons'} align="right" >
+                  <ButtonGroup variant="contained" aria-label="outlined primary button group"
+                  >
+                    <Button onClick={() => handleEditClick(row)}>
+                      <Icon>
+                        <Edit />
+                      </Icon>
+                    </Button>
+                    <Button onClick={() => handleDeleteClick(row)}>
+                      <Icon>
+                        <Delete />
+                      </Icon>
+                    </Button>
+                  </ButtonGroup>
+                </TableCell>
               </ExpandableTableRow>
             ))}
           </TableBody>

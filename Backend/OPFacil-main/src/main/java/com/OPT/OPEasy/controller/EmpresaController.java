@@ -27,7 +27,7 @@ public class EmpresaController {
     EmpresaService empresaService;
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<Empresa> cadastrarEmpresa(@RequestBody Empresa empresa){
+    public ResponseEntity<Empresa> cadastrarEmpresa(@RequestBody Empresa empresa) throws Exception{
         Empresa newEmpresa = empresaService.cadastrarEmpresa(empresa);
         return new ResponseEntity<Empresa>(newEmpresa, HttpStatus.ACCEPTED);
     }
