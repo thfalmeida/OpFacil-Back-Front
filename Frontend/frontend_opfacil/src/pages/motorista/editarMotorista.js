@@ -9,7 +9,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import { MotoristaModel } from "./motoristaModel";
-
+import { configURL } from "../setup/setup";
 
 export default function EditarContatoModal({...props}) {
     let{editModal, setEditModal, motoristaToEdit, setMotoristaToEdit, 
@@ -29,7 +29,7 @@ export default function EditarContatoModal({...props}) {
 
         console.log(editedMotorista);
 
-        const res = await axios.put('http://localhost:8080/motorista/atualizar/' + editedMotorista.id, editedMotorista)
+        const res = await axios.put(configURL + 'motorista/atualizar/' + editedMotorista.id, editedMotorista)
             .then((res) => {
                 callback("success", "Motorista alterado com sucesso")
             })

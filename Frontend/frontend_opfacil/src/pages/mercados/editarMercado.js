@@ -9,6 +9,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import { MercadoModel } from "./mercadoPage";
+import { configURL } from "../setup/setup";
 
 const MercadoDTO = {
     id: -1,
@@ -34,7 +35,7 @@ export default function EditarMercadoModel({...props}) {
         editedMercado.nick = nickInputText.value;
         editedMercado.endereco = enderecoInputText.value;
 
-        const res = await axios.put('http://localhost:8080/mercado/atualizar/' + editedMercado.id, editedMercado)
+        const res = await axios.put(configURL + 'mercado/atualizar/' + editedMercado.id, editedMercado)
             .then(() => {
                 callback("success", "Mercado alterado com sucesso")
             })

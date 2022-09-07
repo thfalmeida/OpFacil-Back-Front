@@ -11,7 +11,7 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import { ContatoModel } from "./contatoModel";
 import {EmpresaModel} from '../empresas/empresaModel'
-
+import { configURL } from "../setup/setup";
 
 export default function EditarContatoModal({...props}) {
     let{editModal, setEditModal, contatoToEdit, setContatoToEdit, 
@@ -29,7 +29,6 @@ export default function EditarContatoModal({...props}) {
         setCurrentEmpresa(empresas.find(obj => {
             return obj.nick == event.target.value
         }))
-        console.log(currentEmpresa)
     }
 
     const hadleConfirmEditClick = async () => {
@@ -42,7 +41,7 @@ export default function EditarContatoModal({...props}) {
 
         console.log(editedContato);
 
-        const res = await axios.put('http://localhost:8080/contato/atualizar/' + editedContato.id, editedContato)
+        const res = await axios.put(configURL + 'contato/atualizar/' + editedContato.id, editedContato)
             .then((res) => {
                 callback("success", "Contato alterado com sucesso")
             })

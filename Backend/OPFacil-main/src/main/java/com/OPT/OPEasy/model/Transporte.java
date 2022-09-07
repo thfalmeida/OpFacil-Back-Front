@@ -8,8 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 
-import com.OPT.OPEasy.DTO.TransporteDTO;
-
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +27,7 @@ public class Transporte {
     private Long transporte;
     @ManyToOne
     private Mercado mercado;
+    private float universo;
 
 
     public void SetTransporteAttributes(Transporte transporte){
@@ -36,11 +35,7 @@ public class Transporte {
             this.transporte = transporte.getTransporte();
         if(transporte.getMercado() != null)
             this.mercado = transporte.getMercado();
-    }
-
-    public void SetTransporteAttributes(TransporteDTO transporte){
-        if(transporte.getTransporte() != null)
-            this.transporte = transporte.getTransporte();
+        this.universo = transporte.getUniverso();
     }
 
 }

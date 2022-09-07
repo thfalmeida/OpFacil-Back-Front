@@ -1,20 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import axios from 'axios';
 import {Button} from '@mui/material';
 import { Box } from '@mui/system';
-import {EmpresaModel} from '../empresas/empresaModel'
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import { MotoristaModel } from "./motoristaModel";
-
+import { configURL } from "../setup/setup";
 
 
 export default function NewMotoristaModel({...props}){
     let {newModal, setNewModal, callback} = props;
-
 
     const nomeInputText = document.getElementById("edit_nome");
     const nickInputText = document.getElementById("edit_nick")
@@ -24,7 +22,7 @@ export default function NewMotoristaModel({...props}){
         newConto.nome = nomeInputText.value;
         newConto.nick = nickInputText.value;
         
-        const res = await axios.post('http://localhost:8080/motorista/cadastrar/', newConto)
+        const res = await axios.post(configURL + 'motorista/cadastrar/', newConto)
             .then((res) => {
                 callback("success", "Motorista cadastrado com sucesso")
             })

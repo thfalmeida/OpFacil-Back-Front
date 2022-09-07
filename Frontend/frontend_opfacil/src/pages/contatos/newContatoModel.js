@@ -10,7 +10,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
-
+import { configURL } from "../setup/setup";
 
 export default function NewContato({...props}){
     let {newModal, setNewModal, callback, empresas} = props;
@@ -28,7 +28,7 @@ export default function NewContato({...props}){
         newConto.nick = nickInputText.value;
         newConto.empresa = currentEmpresa;
         
-        const res = await axios.post('http://localhost:8080/contato/cadastrar/', newConto)
+        const res = await axios.post(configURL + 'contato/cadastrar/', newConto)
             .then((res) => {
                 callback("success", "Contato cadastrado com sucesso")
             })

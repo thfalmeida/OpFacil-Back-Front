@@ -17,10 +17,19 @@ import { Viagem } from "../../Model/entityModels";
 import { EmpresaModel } from "../empresas/empresaModel";
 import { MercadoModel } from "../mercados/mercadoPage";
 import { MotoristaModel } from "../motorista/motoristaModel";
-import { moneyMask } from "./currencyMask";
 
 import Alert from '@mui/material/Alert';
 import NewViagemModel from "./newViagemModal";
+import DeleteViagemModal from "./deleteViagem";
+import { viagemModel } from "./viagemModel";
+import DeleteTransporteModal from "./deleteTransporte";
+import EditViagemModal from "./editarViagemModal";
+import { EditTransporte } from "./editTransportModal";
+import { configURL } from "../setup/setup";
+
+const transporteDefault = {
+  id : -1
+}
 
 export default function SimpleTable() {
   const [viagem, setViagem] = useState([{ Viagem }]);
@@ -28,7 +37,19 @@ export default function SimpleTable() {
   const [mercado, setMercado] = useState([{ MercadoModel }]);
   const [motorista, setMotorista] = useState([{ MotoristaModel }])
 
-  const [newModal, setNewModal] = useState(false);
+  const [newModal, setNewModal] = useState(false); 
+
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [viagemToDelete, setViagemToDelete] = useState(viagemModel);
+
+  const [deleteTransporteModal, setDeleteTransporteModal] = useState(false);
+  const [transporteToDelete, setTransporteToDelete] = useState(transporteDefault);
+
+  const [editViagemModal, setEditViagemModal] = useState(false);
+  const [viagemToEdit, setViagemToEdit] = useState(viagemModel);
+
+  const [editTransporteModal, setEditTransporteModal] = useState(false);
+  const [transporteToEdit, setTransporteToEdit] = useState(transporteDefault)
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertType, setAlertType] = useState('success')
@@ -36,22 +57,22 @@ export default function SimpleTable() {
 
   useEffect(() => {
     const getViagem = async () => {
-      const res = await axios('http://localhost:8080/viagem/list');
+      const res = await axios(configURL + 'viagem/list');
       setViagem(res.data);
     }
 
     const getEmpresa = async () => {
-      const res = await axios('http://localhost:8080/empresa/list');
+      const res = await axios(configURL + 'empresa/list');
       setEmpresa(res.data);
     }
 
     const getMercado = async () => {
-      const res = await axios('http://localhost:8080/mercado/list');
+      const res = await axios(configURL + 'mercado/list');
       setMercado(res.data);
     }
 
     const getMotorista = async () => {
-      const res = await axios('http://localhost:8080/motorista/list');
+      const res = await axios(configURL + 'motorista/list');
       setMotorista(res.data);
     }
 
@@ -67,13 +88,31 @@ export default function SimpleTable() {
     setAlertMessage(message);
   } 
 
-  const handleEditClick = () => {
-    console.log("Editar")
+  const handleEditClick = (item) => {
+    setViagemToEdit(item);
+    setEditViagemModal(true);
   }
 
-  const handleDeleteClick = () => {
-    console.log("deletar");
+  const cancelEditClick = () => {
+    setViagemToEdit(viagemModel);
+    setEditViagemModal(false);
   }
+
+  const handleDeleteClick = (item) => {
+    setViagemToDelete(item);
+    setDeleteModal(true);
+  }
+
+  const deleteTransporte = (transporte) => {
+    setTransporteToDelete(transporte);
+    setDeleteTransporteModal(true);
+  }
+
+  const handleEditTransporteClick = (transporte) => {
+    setTransporteToEdit(transporte);
+    setEditTransporteModal(true);
+  }
+
 
   return (
     <>
@@ -81,7 +120,19 @@ export default function SimpleTable() {
       {showAlert && <Alert severity={alertType} onClose={() => { setShowAlert(false) }}>{alertMessage}</Alert>}
 
       <NewViagemModel callback={setAlert} newModal={newModal} setNewModal={setNewModal} motorista={motorista} empresa={empresa}
-        mercado={mercado} />
+        mercado={mercado}/>
+      
+      <DeleteViagemModal callback={setAlert} deleteModal={deleteModal} setDeleteModal={setDeleteModal} viagemToDelete={viagemToDelete}
+        setViagemToDelete={setViagemToDelete} />
+
+      <DeleteTransporteModal deleteModal={deleteTransporteModal} setDeleteModal={setDeleteTransporteModal} transporteToDelete={transporteToDelete}
+        setTransporteToDelete={setTransporteToDelete} callback={setAlert}/>
+
+      <EditViagemModal editModal={editViagemModal} setEditModal={setEditViagemModal} closeModal={cancelEditClick} viagemToEdit={viagemToEdit} setViagemToEdit={setViagemToEdit}
+        callback={setAlert} motorista={motorista} empresa={empresa} mercado={mercado} />
+
+      <EditTransporte editModal={editTransporteModal} setEditModal={setEditTransporteModal} transporteToEdit={transporteToEdit}
+        setTransporteToEdit={setTransporteToEdit} mercados={mercado} callback={setAlert} />
 
       <Button sx={{ margin: '16px' }} variant="contained" startIcon={<Add />} onClick={() => setNewModal(true)}>
         Novo
@@ -101,11 +152,11 @@ export default function SimpleTable() {
           </TableHead>
           <TableBody>
             {viagem.map(row => (
-              <ExpandableTableRow key={row.name} expandComponent={row.transportes} >
+              <ExpandableTableRow key={row.name} expandComponent={row} deleteTransp={deleteTransporte} editTransp={handleEditTransporteClick}>
                 <TableCell component="th" scope="row"> {row.id} </TableCell>
                 <TableCell align="right">{row.motorista ? row.motorista.nick : ""}</TableCell>
                 <TableCell align="right">{row.data ? row.data : ""}</TableCell>
-                <TableCell align="right">{row.valor}</TableCell>
+                <TableCell align="right">{"R$ " + row.valor}</TableCell>
                 <TableCell align="right">{row.empresa ? row.empresa.nick : ""}</TableCell>
                 <TableCell key={'buttons'} align="right" >
                   <ButtonGroup variant="contained" aria-label="outlined primary button group"

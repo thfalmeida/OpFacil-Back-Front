@@ -14,14 +14,14 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { ContatoModel } from "./contatoModel";
-
+import { configURL } from "../setup/setup";
 
 export default function DeleteContatoModal( {...props}) {
     let {deleteModal, contatoToDelete, handleCloseModal, 
         callback, setContatoToDelete, setDeleteModal} = props;
 
     const handleConfirmDeleteClick = async () => {
-        const res = await axios.delete('http://localhost:8080/contato/deletar/' + contatoToDelete.id)
+        const res = await axios.delete(configURL + 'contato/deletar/' + contatoToDelete.id)
             .then((res) => {
                 callback("success", "Contato deletado com sucesso")
 

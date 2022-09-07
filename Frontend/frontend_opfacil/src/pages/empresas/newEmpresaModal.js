@@ -8,6 +8,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import { EmpresaModel } from "./empresaModel";
+import { configURL } from "../setup/setup";
 
 export default function NewEmpresa({ ...props }) {
     let { newModal, setNewModal, callback } = props;
@@ -18,7 +19,7 @@ export default function NewEmpresa({ ...props }) {
         newEmpresa.endereco = document.getElementById("input_endereco").value;
         newEmpresa.nick = document.getElementById("input_nick").value;
 
-        const res = await axios.post('http://localhost:8080/empresa/cadastrar/', newEmpresa)
+        const res = await axios.post(configURL + 'empresa/cadastrar/', newEmpresa)
             .then(() => {
                 callback("success", "Empresa cadastrado com sucesso")
             })

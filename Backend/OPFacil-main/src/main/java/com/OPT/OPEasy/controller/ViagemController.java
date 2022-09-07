@@ -5,6 +5,7 @@ import java.util.stream.Stream;
 
 import com.OPT.OPEasy.DTO.TransporteDTO;
 import com.OPT.OPEasy.Service.ViagemService;
+import com.OPT.OPEasy.model.Transporte;
 import com.OPT.OPEasy.model.Viagem;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,18 @@ public class ViagemController {
         return new ResponseEntity<Viagem>(viagem, HttpStatus.OK);
     }
 
+    @PutMapping("/atualizar/{id}")
+    public ResponseEntity<Viagem> editarViagem(@PathVariable Long id, @RequestBody Viagem viagem) throws Exception{
+        Viagem newViagem = viagemService.editarViagem(viagem);
+        return new ResponseEntity<Viagem>(newViagem, HttpStatus.OK);
+    }
+
+    @PutMapping("/transporte/atualizar/{id}")
+    public ResponseEntity<Transporte> editarTransporte(@PathVariable Long id, @RequestBody Transporte transporte) throws Exception{
+        Transporte editedTransporte = viagemService.editarTransporte(transporte);
+        return new ResponseEntity<Transporte>(editedTransporte, HttpStatus.OK);
+    }
+
     @GetMapping("/list")
     public ResponseEntity<Stream<Viagem>> listarViagems(){
         Stream<Viagem> viagems = viagemService.findAll();
@@ -73,9 +86,9 @@ public class ViagemController {
     }
 
     @DeleteMapping("/transporte/delete/{id}")
-    public ResponseEntity<Viagem> deletarTransporte(@PathVariable Long id, @RequestBody TransporteDTO transporte){
-        Viagem viagem = viagemService.deletarTransporte(id, transporte);
-        return new ResponseEntity<Viagem>(viagem, HttpStatus.OK);
+    public ResponseEntity<Transporte> deletarTransporte(@PathVariable Long id) throws Exception{
+        Transporte transporte2 = viagemService.deletarTransporte(id);
+        return new ResponseEntity<Transporte>(transporte2, HttpStatus.OK);
     }
 
     // @GetMapping("/report")

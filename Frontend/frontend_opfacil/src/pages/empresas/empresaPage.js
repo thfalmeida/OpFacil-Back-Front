@@ -19,6 +19,7 @@ import { EmpresaModel } from "./empresaModel";
 import DeleteEmpresaModal from "./deleteEmpresaModal";
 import EditarEmpresaModal from "./editarEmpresa";
 import NewEmpresa from "./newEmpresaModal";
+import { configURL } from "../setup/setup";
 
 const ALERT_TYPE = {
     SUCESS: "success",
@@ -43,7 +44,7 @@ export default function EmpresaIndex() {
 
     useEffect(() => {
         const getEmpresas = async () => {
-            const res = await axios('http://localhost:8080/empresa/list');
+            const res = await axios(configURL + 'empresa/list');
             setValue(res.data);
         }
 

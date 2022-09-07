@@ -14,6 +14,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { MercadoModel } from "./mercadoPage";
+import { configURL } from "../setup/setup";
 
 
 export default function DeleteMercadoModal( {...props}) {
@@ -21,7 +22,7 @@ export default function DeleteMercadoModal( {...props}) {
         callback, setMercadoToDelete, setDeleteModal} = props;
 
     const handleConfirmDeleteClick = async () => {
-        const res = await axios.delete('http://localhost:8080/mercado/deletar/' + mercadoToDelete.id)
+        const res = await axios.delete(configURL + 'mercado/deletar/' + mercadoToDelete.id)
             .then((res) => {
                 callback("success", "Mercado deletado com sucesso")
 

@@ -8,7 +8,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
-import { MercadoModel } from "./mercadoPage";
+import { configURL } from "../setup/setup";
 
 const MercadoDTO = {
     id: -1,
@@ -31,7 +31,7 @@ export default function NewMercadoModel({...props}){
         newConto.nick = nickInputText.value;
         newConto.endereco = enderecoInputText.value
         
-        const res = await axios.post('http://localhost:8080/mercado/cadastrar/', newConto)
+        const res = await axios.post(configURL + 'mercado/cadastrar/', newConto)
             .then((res) => {
                 callback("success", "Mercado cadastrado com sucesso")
             })

@@ -16,6 +16,7 @@ import MotoristaIndex from "../pages/motorista/motoristaPage";
 import EmpresaIndex from "../pages/empresas/empresaPage";
 import ViagemIndex2 from "../pages/viagens/viagensPage2";
 import MercadoIndex from "../pages/mercados/mercadoPage";
+import SetupPage from "../pages/setup/setup";
 
 
 export default function Rotas(){
@@ -27,6 +28,7 @@ export default function Rotas(){
             <Route element = { <EmpresaIndex/>} path ='/empresa' />
             <Route element = { <ViagemIndex2/>} path ='/viagem' />
             <Route element = { <MercadoIndex/>} path = '/mercado' />
+            <Route element = { <SetupPage/>} path= '/setup' />
         </Routes>
 
 

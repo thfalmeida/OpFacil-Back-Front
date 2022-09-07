@@ -1,5 +1,5 @@
 export const viagemModel = {
-    id: "",
+    id: -1,
     motorista: "",
     empresa: "",
     data: "",

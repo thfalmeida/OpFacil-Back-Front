@@ -14,6 +14,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { EmpresaModel } from "./empresaModel";
+import { configURL } from "../setup/setup";
 
 
 export default function DeleteEmpresaModal( {...props}) {
@@ -21,7 +22,7 @@ export default function DeleteEmpresaModal( {...props}) {
         callback, setEmpresaToDelete, setDeleteModal} = props;
 
     const handleConfirmDeleteClick = async () => {
-        const res = await axios.delete('http://localhost:8080/empresa/delete/' + empresaToDelete.id)
+        const res = await axios.delete(configURL + 'empresa/delete/' + empresaToDelete.id)
             .then((res) => {
                 callback("success", "Empresa deletada com sucesso")
 

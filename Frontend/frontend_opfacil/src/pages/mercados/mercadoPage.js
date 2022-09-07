@@ -18,6 +18,7 @@ import DeleteMercadoModal from "./deleteMercadoModal";
 import Alert from '@mui/material/Alert';
 import EditarMercadoModel from "./editarMercado";
 import NewMercadoModel from "./newMercadoModal";
+import { configURL } from "../setup/setup";
 
 export const MercadoModel ={
     id: "",
@@ -43,7 +44,7 @@ export default function MercadoIndex(){
 
     useEffect(() => {
         const getMercados = async () => {
-            const res = await axios('http://localhost:8080/mercado/list');
+            const res = await axios(configURL + 'mercado/list');
             setValue(res.data);
         }
 

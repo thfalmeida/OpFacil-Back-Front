@@ -9,7 +9,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import { EmpresaModel } from "./empresaModel";
-
+import { configURL } from "../setup/setup";
 
 export default function EditarEmpresaModal({...props}) {
     let{editModal, setEditModal, empresaToEdit, setEmpresaToEdit, 
@@ -23,7 +23,7 @@ export default function EditarEmpresaModal({...props}) {
         editedEmpresa.nick = document.getElementById("edit_nick").value;
         console.log(editedEmpresa);
 
-        const res = await axios.put('http://localhost:8080/empresa/atualizar/' + editedEmpresa.id, editedEmpresa)
+        const res = await axios.put(configURL + 'empresa/atualizar/' + editedEmpresa.id, editedEmpresa)
             .then((res) => {
                 callback("success", "Empresa alterada com sucesso")
             })

@@ -50,6 +50,10 @@ public class ViagemService {
     public Viagem deleteViagem(Viagem viagem){
         Viagem viagemFound = getViagemById(viagem.getId());
         viagemRepository.delete(viagemFound);
+        System.out.println(viagemFound.getTransportes().size());
+        for(Transporte transporte : viagemFound.getTransportes()){
+            transporteRepository.delete(transporte);
+        }
         return viagemFound;
     }
 
@@ -72,16 +76,53 @@ public class ViagemService {
         return viagem;
     }
 
-    public Viagem deletarTransporte(Long id, TransporteDTO transporteDTO){
-        Viagem viagem = getViagemById(id);
-        Transporte transporte = viagem.GetTransporteByTransporteNo(transporteDTO.getTransporte());
-        if(transporte == null)
-            return viagem;
+    public Transporte deletarTransporte(Long id) throws Exception{
+        Transporte transporte = transporteRepository.findById(id).orElseThrow(
+            () -> new Exception( "Transporte não encontrado"));
 
-        viagem.DeleteTransporte(transporte);
-        viagemRepository.save(viagem);
+        
+        deleteTransporte(transporte.getId());
         transporteRepository.delete(transporte);
-        return viagem;
+        return transporte;
+
+    }
+
+    public Viagem editarViagem(Viagem viagem) throws Exception{
+        //Confirma se existe alguma viagem com o ID recebido
+        Viagem viagemFound = getViagemById(viagem.getId());
+        
+        //Confirma que se houver motorista e empresa cadastrados na viagem, eles existam na base de dados
+        checkEditViagem(viagem);
+        //Confirma que cada transporte inserido já não tenha sido cadastrado anteriormente
+        //E exclui transportes repetidos (com o mesmo numero de transporte)
+        List<Transporte> transportes = viagem.getTransportes();
+        if(!transportes.isEmpty()){
+            transportes = checkTransporte(transportes);
+            viagem.setTransportes(transportes);
+        }
+        List<Transporte> allTransportes = viagemFound.getTransportes();
+        allTransportes.addAll(viagem.getTransportes());
+        viagem.setTransportes(allTransportes);
+
+        viagemFound.updateViagem(viagem);
+        viagemRepository.save(viagemFound);
+        return viagemFound;
+
+    }
+
+    public Transporte editarTransporte(Transporte transporte) throws Exception{
+        Transporte transporteFound = transporteRepository.findById(transporte.getId()).orElseThrow(
+            () -> new Exception ("Transporte não encontrado"));
+        
+        checkTransporte(transporte);
+        Viagem viagem = getViagemByTransporte(transporte);
+
+        viagem.DeleteTransporte(transporteFound);
+        transporteFound.SetTransporteAttributes(transporte);
+        viagem.AddTransporte(transporteFound);
+        transporteRepository.save(transporteFound);
+
+        return transporteFound;
     }
 
     public boolean hasTransporte(Long transporte){
@@ -112,15 +153,34 @@ public class ViagemService {
         return viagens;
     }
 
+    private void checkEditViagem(Viagem viagem) throws Exception{
+        Motorista motorista = viagem.getMotorista();
+        if(motorista != null && motorista.getId() != null && !motoristaService.hasMotoristaById(motorista.getId()))
+            throw new Exception("Motorista não encontrado");
+        
+        Empresa empresa = viagem.getEmpresa();
+        if(empresa != null && empresa.getId() != null && !empresaService.hasEmpresaById(empresa.getId()))
+            throw new ResourceNotFoundException("Empresa não encontrada");
+    }
+
 
     public void checkCadastroViagem(Viagem viagem) throws Exception{
         List<Transporte> transportes = viagem.getTransportes();
         if(transportes == null || transportes.size() < 1)
             throw new Exception("A viagem precisa ter transportes cadastrados");
-        if(viagem.getMotorista() != null && !motoristaService.hasMotoristaById(viagem.getMotorista().getId()))
-            throw new ResourceNotFoundException("Motorista não encontrado");
-        if(viagem.getEmpresa() != null && !empresaService.hasEmpresaById(viagem.getEmpresa().getId()))
+
+        Motorista motorista = viagem.getMotorista();
+        if(motorista == null || motorista.getId() == null)
+            throw new ResourceNotFoundException("Motorista não pode ser nulo ou vazio.");
+        if(!motoristaService.hasMotoristaById(motorista.getId()))
+            throw new Exception("Motorista não encontrado");
+        
+        Empresa empresa = viagem.getEmpresa();
+        if(empresa == null || empresa.getId() == null)
+        throw new ResourceNotFoundException("Empresa não pode ser nulo ou vazio.");
+        if(!empresaService.hasEmpresaById(empresa.getId()))
             throw new ResourceNotFoundException("Empresa não encontrada");
+        
     }
 
     public List<Transporte> checkTransporte(List<Transporte> transportes) throws Exception{
@@ -159,6 +219,42 @@ public class ViagemService {
         }
 
         return listaRetorno;
+    }
+
+    private void checkTransporte(Transporte transporte) throws Exception{
+        Transporte transporteFound = transporteRepository.findById(transporte.getId()).orElseThrow(
+            () -> new Exception("Transporte não encontrado")
+        );
+
+        //Caso seja necessário alterar o numero do transporte, checa se existe outro transporte já cadastrado com
+        //o numero inserido
+        if(transporte.getTransporte() != null && transporte.getTransporte() != transporteFound.getTransporte()){
+            if (hasTransporte(transporte.getTransporte()))
+                throw new Exception("O numero de transporte inserido já foi cadastrado em outro transporte");
+        }
+    }
+    private void deleteTransporte(Long id){
+        List<Viagem> viagens = viagemRepository.findAll();
+        for(Viagem viagem: viagens){
+            for(Transporte transp : viagem.getTransportes()){
+                if(transp.getId() == id){
+                    viagem.DeleteTransporte(transp);
+                    return;
+                }
+            }
+        }
+    }
+
+    private Viagem getViagemByTransporte(Transporte transporte) throws Exception{ 
+        List<Viagem> viagens = viagemRepository.findAll();
+        for(Viagem viagem : viagens){
+            List<Transporte> transportes = viagem.getTransportes();
+            for(Transporte transp : transportes){
+                if(transp.getId() == transporte.getId())
+                    return viagem;
+            }
+        }
+        throw new Exception("Nenhuma viagem associada à esse transporte foi encontrado. Favor, verificar e corrigir o bando de dados.");
     }
 }
  

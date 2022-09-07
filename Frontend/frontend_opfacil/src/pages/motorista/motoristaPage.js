@@ -19,6 +19,7 @@ import NewMotoristaModel from "./newMotoristaModel";
 import Alert from '@mui/material/Alert';
 import DeleteMotoristaModal from "./deleteMotoristaModal";
 import EditarContatoModal from "./editarMotorista";
+import { configURL } from "../setup/setup";
 
 
 export default function MotoristaIndex(){
@@ -38,7 +39,7 @@ export default function MotoristaIndex(){
 
     useEffect(() => {
         const getContato = async () => {
-            const res = await axios('http://localhost:8080/motorista/list');
+            const res = await axios(configURL + 'motorista/list');
             setValue(res.data);
         }
 

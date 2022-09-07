@@ -19,6 +19,7 @@ import DeleteContatoModal from "./deleteContatoModal";
 import EditarContatoModal from "./editarContato";
 import { ContatoModel } from "./contatoModel";
 import NewContato from "./newContatoModel";
+import { configURL } from "../setup/setup";
 
 const ALERT_TYPE = {
     SUCESS: "success",
@@ -43,11 +44,11 @@ export default function ContatoIndex() {
 
     useEffect(() => {
         const getContato = async () => {
-            const res = await axios('http://localhost:8080/contato/list');
+            const res = await axios(configURL + 'contato/list');
             setValue(res.data);
         }
         const getEmpresas = async () => {
-            const res = await axios('http://localhost:8080/empresa/list');
+            const res = await axios(configURL + 'empresa/list');
             setEmpresas(res.data);
         }
     

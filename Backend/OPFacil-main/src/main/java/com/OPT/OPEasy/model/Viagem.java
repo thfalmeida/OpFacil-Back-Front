@@ -3,6 +3,7 @@ package com.OPT.OPEasy.model;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -36,36 +37,36 @@ public class Viagem {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate data;
     private float valor, avaria;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Transporte> transportes;
 
 
     public void setAttributes(Viagem viagem){
+        setNullablesAttributes(viagem);
+        if(viagem.getValor() != 0)
+            this.valor = viagem.getValor();
+        if(viagem.getAvaria() != 0)
+            this.avaria = viagem.getAvaria();
+       
+        this.transportes = viagem.getTransportes();
+    }
+
+    public void updateViagem(Viagem viagem){
+        setNullablesAttributes(viagem);
+        this.valor = viagem.getValor();
+        this.avaria = viagem.getAvaria();
+       
+        this.transportes = viagem.getTransportes();
+    }
+
+    private void setNullablesAttributes(Viagem viagem){
         if(viagem.getMotorista() != null)
             this.motorista = viagem.getMotorista();
         if(viagem.getEmpresa() != null)
             this.empresa = viagem.getEmpresa();
         if(viagem.getData()!= null)
             this.data = viagem.getData();
-        if(viagem.getData() != null)
-            this.data = viagem.getData();
-        if(viagem.getValor() != 0)
-            this.valor = viagem.getValor();
-        if(viagem.getAvaria() != 0)
-        this.avaria = viagem.getAvaria();
-       
-        this.transportes = viagem.getTransportes();
     }
-
-    // public void setAttributes(ViagemDTO viagem){
-    //     if(viagem.getData() != null)
-    //         this.data = viagem.getData();
-    //     if(viagem.getValor() != 0)
-    //         this.valor = viagem.getValor();
-    //     if(viagem.getAvaria() != 0)
-    //     this.avaria = viagem.getAvaria();
-    // }
-
 
     public void AddTransporte(Transporte transporte){
         transportes.add(transporte);
