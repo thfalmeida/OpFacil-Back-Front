@@ -1,10 +1,17 @@
 package com.OPT.OPEasy.controller;
 
-
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Stream;
+
+import javax.servlet.http.HttpServletResponse;
 
 import com.OPT.OPEasy.DTO.TransporteDTO;
 import com.OPT.OPEasy.Service.ViagemService;
+import com.OPT.OPEasy.Util.ViagemExcelExporter;
 import com.OPT.OPEasy.model.Transporte;
 import com.OPT.OPEasy.model.Viagem;
 
@@ -28,72 +35,84 @@ public class ViagemController {
     @Autowired
     ViagemService viagemService;
 
-
     @PostMapping("/cadastrar")
-    public ResponseEntity<Viagem> cadastrarViagem(@RequestBody Viagem viagem) throws Exception{
+    public ResponseEntity<Viagem> cadastrarViagem(@RequestBody Viagem viagem) throws Exception {
         Viagem newViagem = viagemService.cadastrarViagem(viagem);
         return new ResponseEntity<Viagem>(newViagem, HttpStatus.CREATED);
     }
 
-
     @DeleteMapping("/deletar/{id}")
-    public ResponseEntity<Viagem> deleteViagem(@PathVariable Long id){
+    public ResponseEntity<Viagem> deleteViagem(@PathVariable Long id) {
         Viagem viagem = viagemService.getViagemById(id);
         viagemService.deleteViagem(viagem);
         return new ResponseEntity<Viagem>(viagem, HttpStatus.OK);
     }
 
     @PutMapping("/atualizar/{id}")
-    public ResponseEntity<Viagem> editarViagem(@PathVariable Long id, @RequestBody Viagem viagem) throws Exception{
+    public ResponseEntity<Viagem> editarViagem(@PathVariable Long id, @RequestBody Viagem viagem) throws Exception {
         Viagem newViagem = viagemService.editarViagem(viagem);
         return new ResponseEntity<Viagem>(newViagem, HttpStatus.OK);
     }
 
     @PutMapping("/transporte/atualizar/{id}")
-    public ResponseEntity<Transporte> editarTransporte(@PathVariable Long id, @RequestBody Transporte transporte) throws Exception{
+    public ResponseEntity<Transporte> editarTransporte(@PathVariable Long id, @RequestBody Transporte transporte)
+            throws Exception {
         Transporte editedTransporte = viagemService.editarTransporte(transporte);
         return new ResponseEntity<Transporte>(editedTransporte, HttpStatus.OK);
     }
 
     @GetMapping("/list")
-    public ResponseEntity<Stream<Viagem>> listarViagems(){
+    public ResponseEntity<Stream<Viagem>> listarViagems() {
         Stream<Viagem> viagems = viagemService.findAll();
         return new ResponseEntity<>(viagems, HttpStatus.OK);
     }
 
     @GetMapping("/motorista/{id}")
-    public ResponseEntity<Stream<Viagem>> consultarViagemByMotorista(@PathVariable Long id){
+    public ResponseEntity<Stream<Viagem>> consultarViagemByMotorista(@PathVariable Long id) {
         Stream<Viagem> viagens = viagemService.getViagemByMotorista(id);
         return new ResponseEntity<Stream<Viagem>>(viagens, HttpStatus.OK);
     }
 
     @GetMapping("/empresa/{id}")
-    public ResponseEntity<Stream<Viagem>> consultarViagemByEmpresa(@PathVariable Long id){
+    public ResponseEntity<Stream<Viagem>> consultarViagemByEmpresa(@PathVariable Long id) {
         Stream<Viagem> viagens = viagemService.getViagemByEmpresa(id);
         return new ResponseEntity<Stream<Viagem>>(viagens, HttpStatus.OK);
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<Viagem> consultarViagem(@PathVariable Long id){
+    public ResponseEntity<Viagem> consultarViagem(@PathVariable Long id) {
         Viagem viagem = viagemService.getViagemById(id);
         return new ResponseEntity<Viagem>(viagem, HttpStatus.OK);
     }
 
     @PutMapping("/transporte/add/{id}")
-    public ResponseEntity<Viagem> addTransporte(@PathVariable Long id,@RequestBody TransporteDTO transporte) throws Exception{
+    public ResponseEntity<Viagem> addTransporte(@PathVariable Long id, @RequestBody TransporteDTO transporte)
+            throws Exception {
         Viagem viagem = viagemService.addTransporte(id, transporte);
         return new ResponseEntity<Viagem>(viagem, HttpStatus.OK);
     }
 
     @DeleteMapping("/transporte/delete/{id}")
-    public ResponseEntity<Transporte> deletarTransporte(@PathVariable Long id) throws Exception{
+    public ResponseEntity<Transporte> deletarTransporte(@PathVariable Long id) throws Exception {
         Transporte transporte2 = viagemService.deletarTransporte(id);
         return new ResponseEntity<Transporte>(transporte2, HttpStatus.OK);
     }
 
-    // @GetMapping("/report")
-    // public ResponseEntity<List<Transporte>> gerarRelatorio(@RequestBody ViagemRelatorioDTO rel) throws FileNotFoundException, IOException{
-    //     List<Transporte> viagens = writterService.generateReport(rel);
-    //     return new ResponseEntity<>(viagens, HttpStatus.OK);
-    // }
+    @GetMapping("/report")
+    public void exportToExcel(HttpServletResponse response) throws IOException {
+        response.setContentType("application/octet-stream");
+        DateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=users_" + currentDateTime + ".xlsx";
+        response.setHeader(headerKey, headerValue);
+
+        List<Viagem> listUsers = viagemService.findAll().toList();
+
+        ViagemExcelExporter excelExporter = new ViagemExcelExporter(listUsers);
+
+        excelExporter.export(response);
+    }
+
 }

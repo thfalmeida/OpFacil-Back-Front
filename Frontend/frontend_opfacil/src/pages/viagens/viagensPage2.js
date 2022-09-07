@@ -11,7 +11,7 @@ import {
   TableRow,
   Icon
 } from '@mui/material';
-import { Add, Delete, Edit } from '@mui/icons-material';
+import { Add, Delete, Edit, FileDownload } from '@mui/icons-material';
 import { ExpandableTableRow } from "./transporteView";
 import { Viagem } from "../../Model/entityModels";
 import { EmpresaModel } from "../empresas/empresaModel";
@@ -27,9 +27,12 @@ import EditViagemModal from "./editarViagemModal";
 import { EditTransporte } from "./editTransportModal";
 import { configURL } from "../setup/setup";
 
+const FileDownloader = require('js-file-download');
+
 const transporteDefault = {
-  id : -1
+  id: -1
 }
+var fs = require('fs');
 
 export default function SimpleTable() {
   const [viagem, setViagem] = useState([{ Viagem }]);
@@ -37,7 +40,7 @@ export default function SimpleTable() {
   const [mercado, setMercado] = useState([{ MercadoModel }]);
   const [motorista, setMotorista] = useState([{ MotoristaModel }])
 
-  const [newModal, setNewModal] = useState(false); 
+  const [newModal, setNewModal] = useState(false);
 
   const [deleteModal, setDeleteModal] = useState(false);
   const [viagemToDelete, setViagemToDelete] = useState(viagemModel);
@@ -82,11 +85,28 @@ export default function SimpleTable() {
     getMotorista();
   })
 
+  const getReport = async () => {
+    console.log("Downloading...")
+    const res = await axios.get(configURL + 'viagem/report', { responseType: "blob" })
+      .then((response) => {
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+
+        today = 'report ' + dd + '-' + mm + '-' + yyyy;
+        FileDownloader(response.data, today + '.xlsx');
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
   const setAlert = (alertType, message) => {
     setShowAlert(true);
     setAlertType(alertType);
     setAlertMessage(message);
-  } 
+  }
 
   const handleEditClick = (item) => {
     setViagemToEdit(item);
@@ -120,13 +140,13 @@ export default function SimpleTable() {
       {showAlert && <Alert severity={alertType} onClose={() => { setShowAlert(false) }}>{alertMessage}</Alert>}
 
       <NewViagemModel callback={setAlert} newModal={newModal} setNewModal={setNewModal} motorista={motorista} empresa={empresa}
-        mercado={mercado}/>
-      
+        mercado={mercado} />
+
       <DeleteViagemModal callback={setAlert} deleteModal={deleteModal} setDeleteModal={setDeleteModal} viagemToDelete={viagemToDelete}
         setViagemToDelete={setViagemToDelete} />
 
       <DeleteTransporteModal deleteModal={deleteTransporteModal} setDeleteModal={setDeleteTransporteModal} transporteToDelete={transporteToDelete}
-        setTransporteToDelete={setTransporteToDelete} callback={setAlert}/>
+        setTransporteToDelete={setTransporteToDelete} callback={setAlert} />
 
       <EditViagemModal editModal={editViagemModal} setEditModal={setEditViagemModal} closeModal={cancelEditClick} viagemToEdit={viagemToEdit} setViagemToEdit={setViagemToEdit}
         callback={setAlert} motorista={motorista} empresa={empresa} mercado={mercado} />
@@ -134,9 +154,15 @@ export default function SimpleTable() {
       <EditTransporte editModal={editTransporteModal} setEditModal={setEditTransporteModal} transporteToEdit={transporteToEdit}
         setTransporteToEdit={setTransporteToEdit} mercados={mercado} callback={setAlert} />
 
-      <Button sx={{ margin: '16px' }} variant="contained" startIcon={<Add />} onClick={() => setNewModal(true)}>
-        Novo
-      </Button>
+      <ButtonGroup>
+        <Button sx={{ margin: '16px' }} variant="contained" startIcon={<Add />} onClick={() => setNewModal(true)}>
+          Novo
+        </Button>
+        <Button sx={{ margin: '16px' }} variant="contained" startIcon={<FileDownload />} onClick={() => getReport()}>
+          Exportar
+        </Button>
+      </ButtonGroup>
+
       <Paper >
         <Table aria-label="simple table">
           <TableHead>

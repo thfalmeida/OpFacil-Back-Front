@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { MercadoModel } from "../mercados/mercadoPage";
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
-
 export const NewTransporte = ({...props}) => {
     let { mercados, index, setTransportes, transportes } = props;
     const [transporte, setTransporte] = useState(-1);

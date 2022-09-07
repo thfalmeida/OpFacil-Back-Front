@@ -256,5 +256,6 @@ public class ViagemService {
         }
         throw new Exception("Nenhuma viagem associada à esse transporte foi encontrado. Favor, verificar e corrigir o bando de dados.");
     }
+
 }
  
