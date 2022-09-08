@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import axios from 'axios';
 import TextField from '@mui/material/TextField';
 import { Button } from '@mui/material';
 import { Box } from '@mui/system';
 import Alert from '@mui/material/Alert'; 
-import fs from 'fs';
 
 export const config = require('../setup/default.json')
 export const ipConfig = config.host;

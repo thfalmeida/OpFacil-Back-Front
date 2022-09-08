@@ -32,7 +32,6 @@ const FileDownloader = require('js-file-download');
 const transporteDefault = {
   id: -1
 }
-var fs = require('fs');
 
 export default function SimpleTable() {
   const [viagem, setViagem] = useState([{ Viagem }]);
