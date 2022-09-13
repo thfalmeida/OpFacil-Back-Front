@@ -21,10 +21,12 @@ import com.OPT.OPEasy.model.Viagem;
 public class ViagemExcelExporter {
     private XSSFWorkbook workbook;
     private XSSFSheet sheet;
+    private boolean isComplete;
     private List<Viagem> listViagens;
      
-    public ViagemExcelExporter(List<Viagem> listViagens) {
+    public ViagemExcelExporter(List<Viagem> listViagens, boolean isComplete) {
         this.listViagens = listViagens;
+        this.isComplete = isComplete;
         workbook = new XSSFWorkbook();
     }
 
@@ -45,6 +47,8 @@ public class ViagemExcelExporter {
         createCell(row, 3, "Transporte", style);
         createCell(row, 4, "Data", style);    
         createCell(row, 5, "Valor", style);
+        if(!isComplete)
+            return;
         createCell(row, 6, "Transporte ID", style);
         createCell(row, 7, "Universo", style);
          
@@ -76,8 +80,15 @@ public class ViagemExcelExporter {
         XSSFFont font = workbook.createFont();
         font.setFontHeight(14);
         style.setFont(font);
-                 
+
+        boolean blankLine = false;
+        boolean showValue = true;
         for (Viagem viagem : listViagens) {
+            if(blankLine){
+                sheet.createRow(rowCount++);
+            }
+
+            showValue = true;
             for(Transporte transp: viagem.getTransportes()){
                 
                 Row row = sheet.createRow(rowCount++);
@@ -87,11 +98,22 @@ public class ViagemExcelExporter {
                 createCell(row, columnCount++, transp.getMercado().getNick(), style);
                 createCell(row, columnCount++, transp.getTransporte(), style);
                 createCell(row, columnCount++, viagem.getData(), style);
-                createCell(row, columnCount++, viagem.getValor(), style);
-                createCell(row, columnCount++, transp.getId(), style);
-                createCell(row, columnCount++, transp.getUniverso(), style);
+                createCell(row, columnCount++, getValue(viagem, showValue), style);
+                if(isComplete){
+                    createCell(row, columnCount++, transp.getId(), style);
+                    createCell(row, columnCount++, transp.getUniverso(), style);
+                }
+
+                showValue = false;
+                blankLine = true;
             }
         }
+    }
+
+    private String getValue(Viagem viagem, boolean showValue){
+        if(!showValue)
+            return "";
+        return  String.valueOf(viagem.getValor());
     }
 
     public void export(HttpServletResponse response) throws IOException {

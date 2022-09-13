@@ -105,12 +105,12 @@ public class ViagemController {
         String currentDateTime = dateFormatter.format(new Date());
 
         String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename=users_" + currentDateTime + ".xlsx";
+        String headerValue = "attachment; filename=viagem_" + currentDateTime + ".xlsx";
         response.setHeader(headerKey, headerValue);
 
         List<Viagem> listUsers = viagemService.findAll().toList();
 
-        ViagemExcelExporter excelExporter = new ViagemExcelExporter(listUsers);
+        ViagemExcelExporter excelExporter = new ViagemExcelExporter(listUsers, true);
 
         excelExporter.export(response);
     }
