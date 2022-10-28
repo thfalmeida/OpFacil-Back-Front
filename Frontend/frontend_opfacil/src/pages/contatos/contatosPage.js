@@ -17,9 +17,9 @@ import { Box } from '@mui/system';
 import Alert from '@mui/material/Alert';
 import DeleteContatoModal from "./deleteContatoModal";
 import EditarContatoModal from "./editarContato";
-import { ContatoModel } from "./contatoModel";
+import { criar_contato } from "./criar_contato_obj";
 import NewContato from "./newContatoModel";
-import { configURL } from "../setup/setup";
+import { configURL } from "../setup/setup"; 
 
 const ALERT_TYPE = {
     SUCESS: "success",
@@ -27,14 +27,14 @@ const ALERT_TYPE = {
 }
 
 export default function ContatoIndex() {
-    const [value, setValue] = useState([ContatoModel]);
+    const [value, setValue] = useState([criar_contato()]);
     const [empresas, setEmpresas] = useState([{}]);
 
     const [deleteModal, setDeleteModal] = useState(false)
-    const [contatoToDelete, setContatoToDelete] = useState(ContatoModel);
+    const [contatoToDelete, setContatoToDelete] = useState(criar_contato());
 
     const [editModal, setEditModal] = useState(false);
-    const [contatoToEdit, setContatoToEdit] = useState(ContatoModel);
+    const [contatoToEdit, setContatoToEdit] = useState(criar_contato());
 
     const [newModal, setNewModal] = useState(false);
 
@@ -72,7 +72,7 @@ export default function ContatoIndex() {
 
     const handleCloseModal = () => {
         setDeleteModal(false);
-        setContatoToDelete(ContatoModel);
+        setContatoToDelete(criar_contato());
     }
 
     const handleEditClick = (contato) => {

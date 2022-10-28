@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import axios from 'axios';
 import {Button} from '@mui/material';
 import { Box } from '@mui/system';
@@ -8,8 +8,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
-import { MotoristaModel } from "./motoristaModel";
 import { configURL } from "../setup/setup";
+import { criar_motorista, motoristaEmpty } from "./criar_motorista";
 
 export default function EditarContatoModal({...props}) {
     let{editModal, setEditModal, motoristaToEdit, setMotoristaToEdit, 
@@ -22,29 +22,27 @@ export default function EditarContatoModal({...props}) {
 
 
     const hadleConfirmEditClick = async () => {
-        let editedMotorista = {... MotoristaModel}
-        editedMotorista.id = motoristaToEdit.id;
-        editedMotorista.nome = nomeInputText.value;
-        editedMotorista.nick = nickInputText.value;
-
+        let id = motoristaToEdit.id;
+        let nome = nomeInputText.value;
+        let nick = nickInputText.value;
+        let editedMotorista = criar_motorista(nome, nick, id)
+        
         console.log(editedMotorista);
 
-        const res = await axios.put(configURL + 'motorista/atualizar/' + editedMotorista.id, editedMotorista)
-            .then((res) => {
-                callback("success", "Motorista alterado com sucesso")
-            })
-            .catch(function (error) {
-                if (error.response) {
-                    console.log(error)
-                    callback("error", error.response.data.message)
-                }
-                else if (error.request) {
-                    console.log(error)
-                    callback("error", error.request.data.message)
-                }
-            })
+        try{
+
+            await axios.put(configURL + 'motorista/atualizar/' + editedMotorista.id, editedMotorista)
+            callback("success", "Motorista alterado com sucesso")
+        }catch(error){
+            console.log(error)
+            if(error.code === 'ERR_NETWORK')
+                callback("error", 'Não foi possível se conectar com o servidor') 
+            else
+                callback("error", error.response.data.message)
+        }
+
         setEditModal(false);
-        setMotoristaToEdit(MotoristaModel);
+        setMotoristaToEdit(motoristaEmpty);
     }
 
     return (

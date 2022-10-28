@@ -18,19 +18,21 @@ import {
     Button,
     Paper,
     Icon
-} from '@mui/material';
-import { EmpresaModel } from "../empresas/empresaModel";
-import { MotoristaModel } from "../motorista/motoristaModel";
+} from '@mui/material'; 
+
 import { NewTransporte } from "./newTransporte";
-import { viagemModel } from "./viagemModel";
+
 import { configURL } from "../setup/setup";
+import { criar_viagem } from "./factory_viagem_transporte";
+import { empresaEmpty } from "../empresas/criar_empresa";
+import { motoristaEmpty } from "../motorista/criar_motorista";
 
 
 export default function NewViagemModel({ ...props }) {
     let { newModal, setNewModal, callback, motorista, empresa, mercado } = props;
 
-    const [currentEmpresa, setCurrentEmpresa] = useState(EmpresaModel);
-    const [currentMotorista, setCurrentMotorista] = useState(MotoristaModel);
+    const [currentEmpresa, setCurrentEmpresa] = useState(empresaEmpty);
+    const [currentMotorista, setCurrentMotorista] = useState(motoristaEmpty);
     const [currentDate, setCurrentDate] = useState(Date())
     const [currentNumTransporte, setcurrentNumTransporte] = useState(0);
     const [transportes, setTransportes] = useState([]);
@@ -39,14 +41,10 @@ export default function NewViagemModel({ ...props }) {
     const [valor, setValor] = useState('')
 
 
+
     const hadleConfirmNewClick = async () => {
-        let newViagem = { ...viagemModel }
-        newViagem.motorista = currentMotorista;
-        newViagem.empresa = currentEmpresa;
-        newViagem.avaria = avaria;
-        newViagem.valor = valor;
-        newViagem.id = -1;
-        newViagem.transportes = transportes;
+        let newViagem = criar_viagem(-1, currentMotorista, currentEmpresa, avaria, valor, transportes)
+
         if(currentDate === null)
             newViagem.data = moment(Date()).format('DD/MM/YYYY');
         else
@@ -54,20 +52,18 @@ export default function NewViagemModel({ ...props }) {
 
         console.log(newViagem);
 
-        await axios.post(configURL + 'viagem/cadastrar/', newViagem)
-            .then(() => {
-                callback("success", "Viagem cadastrado com sucesso")
-            })
-            .catch(function (error) {
-                if (error.response.data) {
-                    callback("error", error.response.data.message)
-                } else if (error.request.data) {
-                    callback("error", error.request.data.message)
-                } else {
-                    callback("error", "Erro não identificado. Contate o ademir")
-                }
+        try{
+            await axios.post(configURL + 'viagem/cadastrar/', newViagem)
+            callback("success", "Viagem cadastrado com sucesso")
 
-            })
+        }catch(error) {
+            console.log(error)
+            if(error.code === 'ERR_NETWORK')
+                callback("error", 'Não foi possível se conectar com o servidor') 
+            else
+                callback("error", error.response.data.message)
+        }
+
         setNewModal(false);
     }
 

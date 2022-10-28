@@ -50,21 +50,16 @@ export default function EditViagemModal({ ...props }) {
 
         console.log(newViagem);
 
-        await axios.put(configURL + 'viagem/atualizar/' + newViagem.id, newViagem)
-            .then(() => {
-                callback("success", "Viagem editada com sucesso")
-            })
-            .catch(function (error) {
-                console.log(error);
-                if (error.response.data) {
-                    callback("error", error.response.data.message)
-                } else if (error.request.data) {
-                    callback("error", error.request.data.message)
-                } else {
-                    callback("error", "Erro não identificado. Contate o ademir")
-                }
-
-            })
+        try{
+            await axios.put(configURL + 'viagem/atualizar/' + newViagem.id, newViagem)
+            callback("success", "Viagem editada com sucesso")
+        }catch(error) {
+            console.log(error)
+            if(error.code === 'ERR_NETWORK')
+                callback("error", 'Não foi possível se conectar com o servidor') 
+            else
+                callback("error", error.response.data.message)
+        }
         closeModal();
     }
 

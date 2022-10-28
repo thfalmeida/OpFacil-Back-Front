@@ -15,11 +15,11 @@ import {
 import Alert from '@mui/material/Alert';
 import { Add, Delete, Edit } from '@mui/icons-material';
 import { Box } from '@mui/system';
-import { EmpresaModel } from "./empresaModel";
 import DeleteEmpresaModal from "./deleteEmpresaModal";
 import EditarEmpresaModal from "./editarEmpresa";
 import NewEmpresa from "./newEmpresaModal";
 import { configURL } from "../setup/setup";
+import { empresaEmpty } from "./criar_empresa";
 
 const ALERT_TYPE = {
     SUCESS: "success",
@@ -27,17 +27,17 @@ const ALERT_TYPE = {
 }
 
 export default function EmpresaIndex() {
-    const [value, setValue] = useState([EmpresaModel]);
+    const [value, setValue] = useState([empresaEmpty]);
 
     const [showAlert, setShowAlert] = useState(false);
     const [alertType, setAlertType] = useState(ALERT_TYPE.SUCESS)
     const [alertMessage, setAlertMessage] = useState("")
 
     const [editModal, setEditModal] = useState(false);
-    const [empresaToEdit, setEmpresaToEdit] = useState(EmpresaModel);
+    const [empresaToEdit, setEmpresaToEdit] = useState(empresaEmpty);
     
     const [deleteModal, setDeleteModal] = useState(false)
-    const [empresaToDelete, setEmpresaToDelete] = useState(EmpresaModel);
+    const [empresaToDelete, setEmpresaToDelete] = useState(empresaEmpty);
 
     const [newModal, setNewModal] = useState(false);
 
@@ -64,7 +64,7 @@ export default function EmpresaIndex() {
     }
 
     const handleCancelDelete = () => {
-        setEmpresaToDelete(EmpresaModel);
+        setEmpresaToDelete(empresaEmpty);
         setDeleteModal(false);
     }
 

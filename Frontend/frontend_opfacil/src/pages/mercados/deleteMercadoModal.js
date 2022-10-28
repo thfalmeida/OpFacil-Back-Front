@@ -13,7 +13,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { MercadoModel } from "./mercadoPage";
+import { mercadoEmpty } from "./mercadoPage";
 import { configURL } from "../setup/setup";
 
 
@@ -22,28 +22,19 @@ export default function DeleteMercadoModal( {...props}) {
         callback, setMercadoToDelete, setDeleteModal} = props;
 
     const handleConfirmDeleteClick = async () => {
-        const res = await axios.delete(configURL + 'mercado/deletar/' + mercadoToDelete.id)
-            .then((res) => {
-                callback("success", "Mercado deletado com sucesso")
+        try{
+            await axios.delete(configURL + 'mercado/deletar/' + mercadoToDelete.id)
+            callback("success", "Mercado deletado com sucesso")
+        }catch(error) {
+            console.log(error)
+            if(error.code === 'ERR_NETWORK')
+                callback("error", 'Não foi possível se conectar com o servidor') 
+            else
+                callback("error", error.response.data.message)
+        }
 
-            })
-            .catch(function (error) {
-                console.log(error.response)
-                if (error.response.data) {
-                    console.log(error);
-                    callback("error", error.response.data.message)
-                }
-                else if (error.request.data) {
-                    console.log(error);
-                    callback("error", error.request.data.message)
-                }
-                else{
-                    callback("error", "Erro de requisição. Reinicie o servidor e tente novamente.")
-                }
-
-            })
         setDeleteModal(false);
-        setMercadoToDelete(MercadoModel);
+        setMercadoToDelete(mercadoEmpty);
     }
 
     return (

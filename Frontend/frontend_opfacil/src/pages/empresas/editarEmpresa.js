@@ -8,37 +8,36 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
-import { EmpresaModel } from "./empresaModel";
+import { criar_empresa } from "./criar_empresa";
 import { configURL } from "../setup/setup";
 
 export default function EditarEmpresaModal({...props}) {
     let{editModal, setEditModal, empresaToEdit, setEmpresaToEdit, 
         callback} = props;
-
-    const hadleConfirmEditClick = async () => {
-        let editedEmpresa = {... EmpresaModel}
-        editedEmpresa.id = empresaToEdit.id;
-        editedEmpresa.razaoSocial = document.getElementById("edit_razaoSocial").value;
-        editedEmpresa.endereco = document.getElementById("edit_endereco").value;
-        editedEmpresa.nick = document.getElementById("edit_nick").value;
-        console.log(editedEmpresa);
-
-        const res = await axios.put(configURL + 'empresa/atualizar/' + editedEmpresa.id, editedEmpresa)
-            .then((res) => {
+        
+        const hadleConfirmEditClick = async () => {
+            let id = empresaToEdit.id;
+            let razaoSocial = document.getElementById("edit_razaoSocial").value;
+            let endereco = document.getElementById("edit_endereco").value;
+            let nick = document.getElementById("edit_nick").value;
+            
+            let editedEmpresa = criar_empresa(id, razaoSocial, nick, endereco)
+            console.log(editedEmpresa);
+            
+            try{
+                await axios.put(configURL + 'empresa/atualizar/' + editedEmpresa.id, editedEmpresa)
                 callback("success", "Empresa alterada com sucesso")
-            })
-            .catch(function (error) {
-                if (error.response) {
-                    console.log(error)
-                    callback("error", error.response.data.message)
-                }
-                else if (error.request) {
-                    console.log(error)
-                    callback("error", error.request.data.message)
-                }
-            })
+            }catch(error){
+                console.log(error)
+                if(error.code === 'ERR_NETWORK')
+                callback("error", 'Não foi possível se conectar com o servidor') 
+                else
+                callback("error", error.response.data.message)
+            }
+            
         setEditModal(false);
-        setEmpresaToEdit(EmpresaModel);
+        let empresaEmpty = criar_empresa(-1, "", "", "")
+        setEmpresaToEdit(empresaEmpty);
     }
 
     return (

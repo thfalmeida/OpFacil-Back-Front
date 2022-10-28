@@ -1,50 +1,39 @@
-import React, { useState } from "react";
+import React from "react";
 import axios from 'axios';
 import {Button} from '@mui/material';
 import { Box } from '@mui/system';
-import {EmpresaModel} from '../empresas/empresaModel'
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import { configURL } from "../setup/setup";
-
-const MercadoDTO = {
-    id: -1,
-    nome: "",
-    endereco: "",
-    nick: ""
-}
+import { criar_mercado } from "./criar_mercado_obj";
 
 export default function NewMercadoModel({...props}){
     let {newModal, setNewModal, callback} = props;
-
 
     const nomeInputText = document.getElementById("edit_nick");
     const nickInputText = document.getElementById("edit_nome");
     const enderecoInputText = document.getElementById("edit_endereco");
 
     const hadleConfirmNewClick = async () => {
-        let newConto = {... MercadoDTO}
-        newConto.nome = nomeInputText.value;
-        newConto.nick = nickInputText.value;
-        newConto.endereco = enderecoInputText.value
+        let nome = nomeInputText.value;
+        let endereco = enderecoInputText.value
+        let nick = nickInputText.value;
+        let newConto = criar_mercado(nome, endereco, nick)
         
-        const res = await axios.post(configURL + 'mercado/cadastrar/', newConto)
-            .then((res) => {
-                callback("success", "Mercado cadastrado com sucesso")
-            })
-            .catch(function (error) {
-                if (error.response.data) {
-                    callback("error", error.response.data.message)
-                }else if (error.request.data)  {
-                    callback("error", error.request.data.message)
-                }else{
-                    callback("error", "Erro não identificado. Contate o ademir")
-                }
+        try{
+            await axios.post(configURL + 'mercado/cadastrar/', newConto)
+            callback("success", "Mercado cadastrado com sucesso")
+        }catch(error){
+            console.log(error)
+            if(error.code === 'ERR_NETWORK')
+                callback("error", 'Não foi possível se conectar com o servidor') 
+            else
+                callback("error", error.response.data.message)
+        }
 
-            })
         setNewModal(false);
     } 
 

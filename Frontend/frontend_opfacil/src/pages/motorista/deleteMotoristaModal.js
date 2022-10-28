@@ -21,18 +21,16 @@ export default function DeleteMotoristaModal( {...props}) {
         callback, setMotoristaToDelete, setDeleteModal} = props;
 
     const handleConfirmDeleteClick = async () => {
-        const res = await axios.delete(configURL + 'motorista/deletar/' + motoristaToDelete.id)
-            .then(() => {
-                callback("success", "Motorista deletado com sucesso")
-
-            })
-            .catch(function (error) {
-                if (error.response) {
-                    callback("error", error.response.data.message)
-
-                }
-
-            })
+        try{
+            await axios.delete(configURL + 'motorista/deletar/' + motoristaToDelete.id)
+            callback("success", "Motorista deletado com sucesso")
+        }catch(error) {
+            console.log(error)
+            if(error.code === 'ERR_NETWORK')
+                callback("error", 'Não foi possível se conectar com o servidor') 
+            else
+                callback("error", error.response.data.message)
+        }
         setDeleteModal(false);
         setMotoristaToDelete(MotoristaModel);
         

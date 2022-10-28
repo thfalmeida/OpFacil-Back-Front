@@ -9,16 +9,15 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
-import { ContatoModel } from "./contatoModel";
-import {EmpresaModel} from '../empresas/empresaModel'
 import { configURL } from "../setup/setup";
+import { contatoEmpty, criar_contato } from "./criar_contato_obj";
 
 export default function EditarContatoModal({...props}) {
     let{editModal, setEditModal, contatoToEdit, setContatoToEdit, 
         callback, empresas} = props;
-    
 
-    const [currentEmpresa, setCurrentEmpresa] = useState(EmpresaModel);
+
+    const [currentEmpresa, setCurrentEmpresa] = useState(contatoEmpty);
 
     const nomeInputText = document.getElementById("edit_nome");
     const emailInputText = document.getElementById("edit_email");
@@ -27,36 +26,33 @@ export default function EditarContatoModal({...props}) {
 
     const handleSelectEmpresa = (event) => {
         setCurrentEmpresa(empresas.find(obj => {
-            return obj.nick == event.target.value
+            return obj.nick === event.target.value
         }))
     }
 
     const hadleConfirmEditClick = async () => {
-        let editedContato = {... ContatoModel}
-        editedContato.id = contatoToEdit.id;
-        editedContato.nome = nomeInputText.value;
-        editedContato.email = emailInputText.value;
-        editedContato.nick = nickInputText.value;
-        editedContato.empresa = currentEmpresa;
-
+        let id = contatoToEdit.id;
+        let nome = nomeInputText.value;
+        let email = emailInputText.value;
+        let nick = nickInputText.value;
+        let empresa = currentEmpresa;
+        let editedContato = criar_contato(id,nome, email, nick, empresa);
+        
         console.log(editedContato);
 
-        const res = await axios.put(configURL + 'contato/atualizar/' + editedContato.id, editedContato)
-            .then((res) => {
-                callback("success", "Contato alterado com sucesso")
-            })
-            .catch(function (error) {
-                if (error.response) {
-                    console.log(error)
-                    callback("error", error.response.data.message)
-                }
-                else if (error.request) {
-                    console.log(error)
-                    callback("error", error.request.data.message)
-                }
-            })
+        try{
+            await axios.put(configURL + 'contato/atualizar/' + editedContato.id, editedContato)
+            callback("success", "Contato alterado com sucesso")
+        }catch(error) {
+            console.log(error)
+            if(error.code === 'ERR_NETWORK')
+                callback("error", 'Não foi possível se conectar com o servidor') 
+            else
+                callback("error", error.response.data.message)
+        }
+
         setEditModal(false);
-        setContatoToEdit(ContatoModel);
+        setContatoToEdit(contatoEmpty);
     }
 
     return (

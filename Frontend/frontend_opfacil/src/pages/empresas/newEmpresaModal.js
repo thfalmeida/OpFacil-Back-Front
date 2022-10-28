@@ -7,28 +7,31 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
-import { EmpresaModel } from "./empresaModel";
+
 import { configURL } from "../setup/setup";
+import { criar_empresa } from "./criar_empresa";
 
 export default function NewEmpresa({ ...props }) {
     let { newModal, setNewModal, callback } = props;
 
     const hadleConfirmNewClick = async () => {
-        let newEmpresa = { ...EmpresaModel }
-        newEmpresa.razaoSocial = document.getElementById("input_razaoSocial").value;
-        newEmpresa.endereco = document.getElementById("input_endereco").value;
-        newEmpresa.nick = document.getElementById("input_nick").value;
+        let razaoSocial = document.getElementById("input_razaoSocial").value;
+        let endereco = document.getElementById("input_endereco").value;
+        let nick = document.getElementById("input_nick").value;
+        let newEmpresa = criar_empresa(-1, razaoSocial, nick, endereco);
 
-        const res = await axios.post(configURL + 'empresa/cadastrar/', newEmpresa)
-            .then(() => {
-                callback("success", "Empresa cadastrado com sucesso")
-            })
-            .catch(function (error) {
-                if (error.response) {
-                    callback("error", error.response.data.message)
-                }
+        
+        try{
+            await axios.post(configURL + 'empresa/cadastrar/', newEmpresa)
+            callback("success", "Empresa cadastrado com sucesso")
+        }catch(error){
+            console.log(error)
+            if(error.code === 'ERR_NETWORK')
+                callback("error", 'Não foi possível se conectar com o servidor') 
+            else
+                callback("error", error.response.data.message)
+        }
 
-            })
         setNewModal(false);
     }
 

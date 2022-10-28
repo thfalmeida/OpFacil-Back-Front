@@ -14,22 +14,23 @@ import {
   } from '@mui/material';
 import { Add, Delete, Edit } from '@mui/icons-material';
 import { Box } from '@mui/system';
-import { MotoristaModel } from "./motoristaModel";
 import NewMotoristaModel from "./newMotoristaModel";
 import Alert from '@mui/material/Alert';
 import DeleteMotoristaModal from "./deleteMotoristaModal";
 import EditarContatoModal from "./editarMotorista";
 import { configURL } from "../setup/setup";
+import { criar_motorista } from "./criar_motorista";
 
 
 export default function MotoristaIndex(){
-    const [value, setValue] = useState([MotoristaModel]);
+    const motoristaEmpty = criar_motorista("","");
+    const [value, setValue] = useState([motoristaEmpty]);
 
     const [deleteModal, setDeleteModal] = useState(false)
-    const [motoristaToDelete, setMotoristaToDelete] = useState(MotoristaModel);
+    const [motoristaToDelete, setMotoristaToDelete] = useState(motoristaEmpty);
     
     const [editModal, setEditModal] = useState(false);
-    const [motoristaToEdit, setMotoristaToEdit] = useState(MotoristaModel);
+    const [motoristaToEdit, setMotoristaToEdit] = useState(motoristaEmpty);
 
     const [newModal, setNewModal] = useState(false);
 
@@ -60,7 +61,7 @@ export default function MotoristaIndex(){
 
     const handleDeleteCloseModal = () => {
         setDeleteModal(false);
-        setMotoristaToDelete(MotoristaModel);
+        setMotoristaToDelete(motoristaEmpty);
     }
 
     const handleEditClick = (motorista) => {

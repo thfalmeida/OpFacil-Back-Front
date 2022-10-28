@@ -13,7 +13,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { EmpresaModel } from "./empresaModel";
+import { empresaEmpty } from "./criar_empresa";
 import { configURL } from "../setup/setup";
 
 
@@ -22,21 +22,19 @@ export default function DeleteEmpresaModal( {...props}) {
         callback, setEmpresaToDelete, setDeleteModal} = props;
 
     const handleConfirmDeleteClick = async () => {
-        const res = await axios.delete(configURL + 'empresa/delete/' + empresaToDelete.id)
-            .then((res) => {
-                callback("success", "Empresa deletada com sucesso")
-
-            })
-            .catch(function (error) {
-                if (error.response) {
-                    console.log(error);
-                    callback("error", error.response.data.message)
-
-                }
-
-            })
+        try{
+            await axios.delete(configURL + 'empresa/delete/' + empresaToDelete.id)
+            callback("success", "Empresa deletada com sucesso")
+        }catch(error) {
+            console.log(error)
+            if(error.code === 'ERR_NETWORK')
+                callback("error", 'Não foi possível se conectar com o servidor') 
+            else
+                callback("error", error.response.data.message)
+        }
+        
         setDeleteModal(false);
-        setEmpresaToDelete(EmpresaModel);
+        setEmpresaToDelete(empresaEmpty);
     }
 
     return (

@@ -14,44 +14,42 @@ import {
 import { Add, Delete, Edit, FileDownload } from '@mui/icons-material';
 import { ExpandableTableRow } from "./transporteView";
 import { Viagem } from "../../Model/entityModels";
-import { EmpresaModel } from "../empresas/empresaModel";
-import { MercadoModel } from "../mercados/mercadoPage";
-import { MotoristaModel } from "../motorista/motoristaModel";
 
 import Alert from '@mui/material/Alert';
 import NewViagemModel from "./newViagemModal";
 import DeleteViagemModal from "./deleteViagem";
-import { viagemModel } from "./viagemModel";
 import DeleteTransporteModal from "./deleteTransporte";
 import EditViagemModal from "./editarViagemModal";
 import { EditTransporte } from "./editTransportModal";
 import { configURL } from "../setup/setup";
 
-const FileDownloader = require('js-file-download');
+import { empresaEmpty } from "../empresas/criar_empresa";
+import { mercadoEmpty } from "../mercados/criar_mercado_obj";
+import { motoristaEmpty } from "../motorista/criar_motorista";
+import { viagemEmpty } from "./factory_viagem_transporte";
+import { transporteEmpty } from "./factory_viagem_transporte";
 
-const transporteDefault = {
-  id: -1
-}
+const FileDownloader = require('js-file-download');
 
 export default function SimpleTable() {
   const [viagem, setViagem] = useState([{ Viagem }]);
-  const [empresa, setEmpresa] = useState([{ EmpresaModel }]);
-  const [mercado, setMercado] = useState([{ MercadoModel }]);
-  const [motorista, setMotorista] = useState([{ MotoristaModel }])
+  const [empresa, setEmpresa] = useState([{ empresaEmpty }]);
+  const [mercado, setMercado] = useState([{ mercadoEmpty }]);
+  const [motorista, setMotorista] = useState([{ motoristaEmpty }])
 
   const [newModal, setNewModal] = useState(false);
 
   const [deleteModal, setDeleteModal] = useState(false);
-  const [viagemToDelete, setViagemToDelete] = useState(viagemModel);
+  const [viagemToDelete, setViagemToDelete] = useState(viagemEmpty);
 
   const [deleteTransporteModal, setDeleteTransporteModal] = useState(false);
-  const [transporteToDelete, setTransporteToDelete] = useState(transporteDefault);
+  const [transporteToDelete, setTransporteToDelete] = useState(transporteEmpty);
 
   const [editViagemModal, setEditViagemModal] = useState(false);
-  const [viagemToEdit, setViagemToEdit] = useState(viagemModel);
+  const [viagemToEdit, setViagemToEdit] = useState(viagemEmpty);
 
   const [editTransporteModal, setEditTransporteModal] = useState(false);
-  const [transporteToEdit, setTransporteToEdit] = useState(transporteDefault)
+  const [transporteToEdit, setTransporteToEdit] = useState(transporteEmpty)
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertType, setAlertType] = useState('success')
@@ -86,19 +84,19 @@ export default function SimpleTable() {
 
   const getReport = async () => {
     console.log("Downloading...")
-    const res = await axios.get(configURL + 'viagem/report', { responseType: "blob" })
-      .then((response) => {
-        var today = new Date();
-        var dd = String(today.getDate()).padStart(2, '0');
-        var mm = String(today.getMonth() + 1).padStart(2, '0'); 
-        var yyyy = today.getFullYear();
-
-        today = 'report ' + dd + '-' + mm + '-' + yyyy;
-        FileDownloader(response.data, today + '.xlsx');
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    try{
+      const res = await axios.get(configURL + 'viagem/report', { responseType: "blob" })
+      console.log(res)
+      var today = new Date();
+      var dd = String(today.getDate()).padStart(2, '0');
+      var mm = String(today.getMonth() + 1).padStart(2, '0'); 
+      var yyyy = today.getFullYear();
+      
+      today = 'report ' + dd + '-' + mm + '-' + yyyy;
+      FileDownloader(res.data, today + '.xlsx');
+      }catch(error){
+        setAlert('error', error.message)
+      };
   }
 
   const setAlert = (alertType, message) => {
@@ -113,7 +111,7 @@ export default function SimpleTable() {
   }
 
   const cancelEditClick = () => {
-    setViagemToEdit(viagemModel);
+    setViagemToEdit(viagemEmpty);
     setEditViagemModal(false);
   }
 

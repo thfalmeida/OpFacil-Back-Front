@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { MercadoModel } from "../mercados/mercadoPage";
+import { mercadoEmpty } from "../mercados/mercadoPage";
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
+
 export const NewTransporte = ({...props}) => {
     let { mercados, index, setTransportes, transportes } = props;
     const [transporte, setTransporte] = useState(-1);
     const [universo, setUniverso] = useState(0);
-    const [mercado, setMercado] = useState(MercadoModel);
+    const [mercado, setMercado] = useState(mercadoEmpty);
 
     const handleSelectEmpresa = (event) => {
         setMercado(mercados.find(obj => {

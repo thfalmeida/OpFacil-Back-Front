@@ -11,9 +11,9 @@ import {
     Button
 } from '@mui/material';
 import { configURL } from "../setup/setup";
-
+import { criar_transporte } from "./factory_viagem_transporte";
 export const EditTransporte = ({ ...props }) => {
-    let { mercados, transporteToEdit, setTransporteToEdit, editModal, setEditModal, callback } = props;
+    let { mercados, transporteToEdit, editModal, setEditModal, callback } = props;
     const [transporte, setTransporte] = useState(null);
     const [universo, setUniverso] = useState(null);
     const [mercado, setMercado] = useState(null);
@@ -33,28 +33,23 @@ export const EditTransporte = ({ ...props }) => {
     };
 
     const hadleConfirmEditClick = async () => {
-        let editedTransporte = {
-            id: transporteToEdit.id,
-            transporte: transporte ? transporte : transporteToEdit.transporte,
-            universo: universo ? parseFloat(universo) : transporteToEdit.universo,
-            mercado: mercado ? mercado : transporteToEdit.mercado
-        }
+        let transporteValue = transporte ? transporte : transporteToEdit.transporte;
+        let universoValue = universo ? parseFloat(universo) : transporteToEdit.universo;
+        let mercadoValue = mercado ? mercado : transporteToEdit.mercado;
+        let editedTransporte = criar_transporte(transporteToEdit.id, transporteValue, universoValue, mercadoValue)
+        
         console.log(editedTransporte);
-        await axios.put(configURL + 'viagem/transporte/atualizar/' + editedTransporte.id, editedTransporte)
-            .then(() => {
-                callback("success", "Transporte editado com sucesso")
-            })
-            .catch(function (error) {
-                console.log(error);
-                if (error.response.data) {
-                    callback("error", error.response.data.message)
-                } else if (error.request.data) {
-                    callback("error", error.request.data.message)
-                } else {
-                    callback("error", "Erro não identificado. Contate o ademir")
-                }
+        try{
+            await axios.put(configURL + 'viagem/transporte/atualizar/' + editedTransporte.id, editedTransporte)
+            callback("success", "Transporte editado com sucesso")
+        }catch(error) {
+            console.log(error)
+            if(error.code === 'ERR_NETWORK')
+                callback("error", 'Não foi possível se conectar com o servidor') 
+            else
+                callback("error", error.response.data.message)
+        }
 
-            })
         setEditModal(false);
     }
 

@@ -19,28 +19,25 @@ import Alert from '@mui/material/Alert';
 import EditarMercadoModel from "./editarMercado";
 import NewMercadoModel from "./newMercadoModal";
 import { configURL } from "../setup/setup";
+import { criar_mercado } from "./criar_mercado_obj";
 
-export const MercadoModel ={
-    id: "",
-    razaoSocial: "",
-    nick: "",
-    endereco: ""
-}
+
+export const mercadoEmpty = criar_mercado("", "", ""); 
 
 export default function MercadoIndex(){
-    const [value, setValue] = useState([MercadoModel]);
+    const [value, setValue] = useState([mercadoEmpty]);
 
     const [showAlert, setShowAlert] = useState(false);
     const [alertType, setAlertType] = useState('success')
     const [alertMessage, setAlertMessage] = useState("")
 
     const [editModal, setEditModal] = useState(false);
-    const [mercadoToEdit, setMercadoToEdit] = useState(MercadoModel);
+    const [mercadoToEdit, setMercadoToEdit] = useState(mercadoEmpty);
 
     const [newModal, setNewModal] = useState(false);
 
     const [deleteModal, setDeleteModal] = useState(false)
-    const [mercadoToDelete, setMercadoToDelete] = useState(MercadoModel);
+    const [mercadoToDelete, setMercadoToDelete] = useState(mercadoEmpty);
 
     useEffect(() => {
         const getMercados = async () => {
@@ -63,7 +60,7 @@ export default function MercadoIndex(){
     }
 
     const handleCloseDeleteModal = () => {
-        setMercadoToDelete(MercadoModel);
+        setMercadoToDelete(mercadoEmpty);
         setDeleteModal(false);
     }
 

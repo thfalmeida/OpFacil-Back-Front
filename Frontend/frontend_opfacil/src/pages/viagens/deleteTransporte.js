@@ -25,20 +25,17 @@ export default function DeleteTransporteModal({ ...props }) {
         callback, setTransporteToDelete, setDeleteModal } = props;
 
     const handleConfirmDeleteClick = async () => {
-        const res = await axios.delete(configURL + 'viagem/transporte/delete/' + transporteToDelete.id)
-            .then((res) => {
-                callback("success", "Transporte deletado com sucesso")
+        try{
+            await axios.delete(configURL + 'viagem/transporte/delete/' + transporteToDelete.id)
+            callback("success", "Transporte deletado com sucesso");
+        }catch(error) {
+            console.log(error)
+            if(error.code === 'ERR_NETWORK')
+                callback("error", 'Não foi possível se conectar com o servidor') 
+            else
+                callback("error", error.response.data.message)
+        }
 
-            })
-            .catch(function (error) {
-                if (error.response.data) {
-                    callback("error", error.response.data.message)
-
-                } else if (error.resquest.data) {
-                    callback("error", error.response.data.message)
-                }
-
-            })
         setDeleteModal(false);
         setTransporteToDelete(transporteModel);
 

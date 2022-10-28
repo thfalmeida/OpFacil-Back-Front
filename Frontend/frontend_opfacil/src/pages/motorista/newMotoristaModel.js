@@ -7,8 +7,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
-import { MotoristaModel } from "./motoristaModel";
 import { configURL } from "../setup/setup";
+import { criar_motorista } from "./criar_motorista";
 
 
 export default function NewMotoristaModel({...props}){
@@ -18,20 +18,22 @@ export default function NewMotoristaModel({...props}){
     const nickInputText = document.getElementById("edit_nick")
 
     const hadleConfirmNewClick = async () => {
-        let newConto = {... MotoristaModel}
-        newConto.nome = nomeInputText.value;
-        newConto.nick = nickInputText.value;
-        
-        const res = await axios.post(configURL + 'motorista/cadastrar/', newConto)
-            .then((res) => {
-                callback("success", "Motorista cadastrado com sucesso")
-            })
-            .catch(function (error) {
-                if (error.response) {
-                    callback("error", error.response.data.message)
-                }
+        let nome = nomeInputText.value;
+        let nick = nickInputText.value;
+        let newConto = criar_motorista(nome, nick)
 
-            })
+        
+        
+        try{
+            await axios.post(configURL + 'motorista/cadastrar', newConto)
+            callback("success", "Motorista cadastrado com sucesso")
+        }catch(error) {
+            console.log(error)
+            if(error.code === 'ERR_NETWORK')
+                callback("error", 'Não foi possível se conectar com o servidor') 
+            else
+                callback("error", error.response.data.message)
+        }
         setNewModal(false);
     } 
 

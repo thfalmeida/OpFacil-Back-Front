@@ -3,6 +3,7 @@ import TextField from '@mui/material/TextField';
 import { Button } from '@mui/material';
 import { Box } from '@mui/system';
 import Alert from '@mui/material/Alert'; 
+import axios from "axios";
 
 export const config = require('../setup/default.json')
 export const ipConfig = config.host;
@@ -15,8 +16,18 @@ export default function SetupPage() {
     const [alertMessage, setAlertMessage] = useState('');
 
     const hadleConfirmClick = async () => {
-
-    }
+        try{
+            let res = await axios.get(configURL + 'setup/');
+            callback("success", "conexão realizada com sucesso");
+            console.log(res);
+        }catch(error){
+            console.log(error)
+            if(error.code === 'ERR_NETWORK')
+                callback("error", 'Não foi possível se conectar com o servidor') 
+            else
+                callback("error", error.response.data.message)
+        }
+    } 
 
     const callback = (type, message) => {
         setAlertType(type);

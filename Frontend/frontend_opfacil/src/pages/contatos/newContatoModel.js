@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import axios from 'axios';
 import {Button} from '@mui/material';
 import { Box } from '@mui/system';
-import { ContatoModel } from "./contatoModel";
-import {EmpresaModel} from '../empresas/empresaModel'
+import {criar_contato} from "./criar_contato_obj";
+import {criar_empresa} from '../empresas/criar_empresa'
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -13,39 +13,41 @@ import MenuItem from '@mui/material/MenuItem';
 import { configURL } from "../setup/setup";
 
 export default function NewContato({...props}){
+    let empresaEmpty = criar_empresa(-1, "", "", "");
     let {newModal, setNewModal, callback, empresas} = props;
 
-    const [currentEmpresa, setCurrentEmpresa] = useState(EmpresaModel);
+    const [currentEmpresa, setCurrentEmpresa] = useState(empresaEmpty);
 
     const nomeInputText = document.getElementById("edit_nome");
     const emailInputText = document.getElementById("edit_email");
     const nickInputText = document.getElementById("edit_nick")
 
     const hadleConfirmNewClick = async () => {
-        let newConto = {... ContatoModel}
-        newConto.nome = nomeInputText.value;
-        newConto.email = emailInputText.value;
-        newConto.nick = nickInputText.value;
-        newConto.empresa = currentEmpresa;
+        let nome = nomeInputText.value;
+        let email = emailInputText.value;
+        let nick = nickInputText.value;
+        let empresa = currentEmpresa;
+        let newContato = criar_contato(-1, nome, email, nick, empresa);
         
-        const res = await axios.post(configURL + 'contato/cadastrar/', newConto)
-            .then((res) => {
-                callback("success", "Contato cadastrado com sucesso")
-            })
-            .catch(function (error) {
-                if (error.response) {
-                    callback("error", error.response.data.message)
-                }
+        try{
+            await axios.post(configURL + 'contato/cadastrar/', newContato)
+            callback("success", "Contato cadastrado com sucesso")
+        }catch(error) {
+            console.log(error)
+            if(error.code === 'ERR_NETWORK')
+                callback("error", 'Não foi possível se conectar com o servidor') 
+            else
+                callback("error", error.response.data.message)
+        }
 
-            })
         setNewModal(false);
     } 
 
     const handleSelectEmpresa = (event) => {
         setCurrentEmpresa(empresas.find(obj => {
-            return obj.nick == event.target.value
+            return obj.nick === event.target.value
         }))
-        console.log(currentEmpresa)
+        console.log(empresaEmpty)
     }
 
     return (

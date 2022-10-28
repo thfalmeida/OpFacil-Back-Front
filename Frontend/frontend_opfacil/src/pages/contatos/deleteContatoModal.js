@@ -13,7 +13,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { ContatoModel } from "./contatoModel";
+import { criar_contato } from "./criar_contato_obj";
 import { configURL } from "../setup/setup";
 
 export default function DeleteContatoModal( {...props}) {
@@ -21,20 +21,19 @@ export default function DeleteContatoModal( {...props}) {
         callback, setContatoToDelete, setDeleteModal} = props;
 
     const handleConfirmDeleteClick = async () => {
-        const res = await axios.delete(configURL + 'contato/deletar/' + contatoToDelete.id)
-            .then((res) => {
-                callback("success", "Contato deletado com sucesso")
-
-            })
-            .catch(function (error) {
-                if (error.response) {
-                    callback("error", error.response.data.message)
-
-                }
-
-            })
+        try{
+            await axios.delete(configURL + 'contato/deletar/' + contatoToDelete.id)
+            callback("success", "Contato deletado com sucesso")
+        }catch(error){
+            console.log(error)
+            if(error.code === 'ERR_NETWORK')
+                callback("error", 'Não foi possível se conectar com o servidor') 
+            else
+                callback("error", error.response.data.message)
+        }
+        
         setDeleteModal(false);
-        setContatoToDelete(ContatoModel);
+        setContatoToDelete(criar_contato());
         
     }
 
